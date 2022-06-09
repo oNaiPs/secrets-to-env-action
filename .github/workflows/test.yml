@@ -23,6 +23,7 @@ jobs:
         uses: ./
         with:
           secrets: ${{ toJSON(secrets) }}
+          excludeList: non-existent,SECRET_2
       - name: Verify secrets to env variables
         run: |
           [[ "${SECRET_1}" != "VALUE_1" ]] && echo "Could not export SECRET_1 secret, value is ${SECRET_1}" && exit 1
