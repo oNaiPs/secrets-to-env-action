@@ -23,16 +23,16 @@ jobs:
         with:
           secrets: ${{ toJSON(secrets) }}
       - run: |
-          [[ "${AAA}" != "AAA" ]] && echo "Could not convert AAA secret" && exit 1
-          [[ "${BBB}" != "BBB" ]] && echo "Could not convert BBB secret" && exit 1
+          [[ "${SECRET_1}" != "VALUE_1" ]] && echo "Could not convert SECRET_1 secret" && exit 1
+          [[ "${SECRET_2}" != "VALUE_2" ]] && echo "Could not convert SECRET_2 secret" && exit 1
         shell: bash
       - uses: ./
         with:
           prefix: PREF_
           secrets: ${{ toJSON(secrets) }}
         env:
-          AAA: 1234 # Should show override warning
+          SECRET_1: 1234 # Should show override warning
       - run: |
-          [[ "${PREF_AAA}" != "AAA" ]] && echo "Could not convert AAA secret" && exit 1
-          [[ "${PREF_BBB}" != "BBB" ]] && echo "Could not convert BBB secret" && exit 1
+          [[ "${PREF_SECRET_1}" != "VALUE_1" ]] && echo "Could not convert PREF_SECRET_1 secret" && exit 1
+          [[ "${PREF_SECRET_2}" != "VALUE_2" ]] && echo "Could not convert PREF_SECRET_2 secret" && exit 1
         shell: bash

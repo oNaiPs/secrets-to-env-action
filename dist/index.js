@@ -46,7 +46,6 @@ function run() {
             const secretsJson = core.getInput('secrets', {
                 required: true
             });
-            core.info(`AKI ${secretsJson}`);
             let secrets;
             try {
                 secrets = JSON.parse(secretsJson);

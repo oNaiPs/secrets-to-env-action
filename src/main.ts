@@ -6,8 +6,6 @@ async function run(): Promise<void> {
       required: true
     })
 
-    core.info(`AKI ${secretsJson}`)
-
     let secrets: Record<string, string>
     try {
       secrets = JSON.parse(secretsJson)
