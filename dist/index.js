@@ -46,6 +46,7 @@ function run() {
             const secretsJson = core.getInput('secrets', {
                 required: true
             });
+            core.info('1');
             let secrets;
             try {
                 secrets = JSON.parse(secretsJson);
@@ -58,7 +59,9 @@ with:
       secrets: \${{ toJSON(secrets) }}
 `);
             }
+            core.info('2');
             const prefix = core.getInput('prefix');
+            core.info('3');
             for (const key of Object.keys(secrets)) {
                 const newKey = prefix.length ? `${prefix}${key}` : key;
                 if (process.env[newKey]) {
@@ -66,6 +69,7 @@ with:
                 }
                 core.exportVariable(newKey, secrets[key]);
             }
+            core.info('4');
             core.info(`Got Secrets!`);
         }
         catch (error) {

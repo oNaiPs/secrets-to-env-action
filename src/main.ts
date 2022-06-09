@@ -6,6 +6,8 @@ async function run(): Promise<void> {
       required: true
     })
 
+    core.info('1')
+
     let secrets: Record<string, string>
     try {
       secrets = JSON.parse(secretsJson)
@@ -18,7 +20,11 @@ with:
 `)
     }
 
+    core.info('2')
+
     const prefix: string = core.getInput('prefix')
+
+    core.info('3')
 
     for (const key of Object.keys(secrets)) {
       const newKey = prefix.length ? `${prefix}${key}` : key
@@ -29,6 +35,8 @@ with:
 
       core.exportVariable(newKey, secrets[key])
     }
+
+    core.info('4')
 
     core.info(`Got Secrets!`)
   } catch (error) {
