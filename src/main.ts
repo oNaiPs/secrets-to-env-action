@@ -1,19 +1,21 @@
 import * as core from '@actions/core'
-// import {wait} from './wait'
 
 async function run(): Promise<void> {
   try {
-    const secrets: Object = core.getInput('secrets')
-    // core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
+    const secretsJson: string = core.getInput('secrets', {
+      // required: true
+    })
+
+    const secrets: Record<string, string> = JSON.parse(secretsJson)
+
+    const prefix: string = core.getInput('prefix')
+
+    for (const key of Object.keys(secrets)) {
+      const newKey = prefix.length ? `${prefix}${key}` : key
+      core.exportVariable(newKey, secrets[key])
+    }
 
     core.info(`Got Secrets!`)
-    core.info(JSON.stringify(secrets))
-
-    // core.debug(new Date().toTimeString())
-    // await wait(parseInt(ms, 10))
-    // core.debug(new Date().toTimeString())
-
-    // core.setOutput('time', new Date().toTimeString())
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }

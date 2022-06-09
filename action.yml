@@ -1,11 +1,14 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'secrets-to-env-action'
+description: 'Export github secrets to environment variables'
+author: 'Jose Pereira @oNaiPs'
 inputs:
-  milliseconds: # change this
-    required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  secrets:
+    required: false
+    description: 'JSON representation of the secrets'
+    default: '{{ toJson(secrets) }}'
+  prefix:
+    required: false
+    description: 'Prefix to add to all secrets, e.g.: SECRET_'
 runs:
   using: 'node16'
   main: 'dist/index.js'

@@ -22,3 +22,5 @@ jobs:
       - uses: ./
         with:
           secrets: ${{ toJSON(secrets) }}
+      - run: |
+          echo "Env var from secret: ${AAA}"
