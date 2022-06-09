@@ -21,4 +21,4 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          secrets: ${{ secrets }}
+          secrets: ${{ toJSON(secrets) }}
