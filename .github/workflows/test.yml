@@ -25,7 +25,14 @@ jobs:
       - run: |
           [[ "${AAA}" != "AAA" ]] && echo "Could not convert AAA secret" && exit 1
           [[ "${BBB}" != "BBB" ]] && echo "Could not convert BBB secret" && exit 1
-          [[ "${CCC}" != "CCC" ]] && echo "Could not convert CCC secret" && exit 1
         shell: bash
-        # env:
-          # CCC: CC
+      - uses: ./
+        with:
+          prefix: PREF_
+          secrets: ${{ toJSON(secrets) }}
+        env:
+          AAA: 1234 # Should show override warning
+      - run: |
+          [[ "${PREF_AAA}" != "AAA" ]] && echo "Could not convert AAA secret" && exit 1
+          [[ "${PREF_BBB}" != "BBB" ]] && echo "Could not convert BBB secret" && exit 1
+        shell: bash
