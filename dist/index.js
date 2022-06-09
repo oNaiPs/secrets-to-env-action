@@ -46,7 +46,6 @@ function run() {
             const secretsJson = core.getInput('secrets', {
                 required: true
             });
-            core.info('1');
             let secrets;
             try {
                 secrets = JSON.parse(secretsJson);
@@ -59,17 +58,15 @@ with:
       secrets: \${{ toJSON(secrets) }}
 `);
             }
-            core.info('2');
-            const prefix = core.getInput('prefix');
-            core.info('3');
+            const keyPrefix = core.getInput('prefix');
             for (const key of Object.keys(secrets)) {
-                const newKey = prefix.length ? `${prefix}${key}` : key;
+                const newKey = keyPrefix.length ? `${keyPrefix}${key}` : key;
                 if (process.env[newKey]) {
                     core.warning(`Will re-write "${newKey}" environment variable.`);
                 }
+                core.info(secrets[key].split('').toString());
                 core.exportVariable(newKey, secrets[key]);
             }
-            core.info('4');
             core.info(`Got Secrets!`);
         }
         catch (error) {
