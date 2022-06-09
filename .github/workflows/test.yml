@@ -1,0 +1,91 @@
+name: 'build-test'
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - 'releases/*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          npm install
+      - run: |
+          npm run all
+  
+  test-exclude:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Export secrets to env variables (with exclude)
+        uses: ./
+        with:
+          secrets: ${{ toJSON(secrets) }}
+          exclude: non-existent,SECRET_2
+        env:
+          SECRET_1: 1234 # Should show override warning
+      - name: Verify secrets to env variables (with exclude)
+        run: |
+          [[ "${SECRET_1}" != "VALUE_1" ]] && echo "Could not export SECRET_1 secret, value is ${SECRET_1}" && exit 1
+          [[ "${SECRET_2}" != "" ]] && echo "SECRET_2 should be unset, got ${SECRET_2}" && exit 1
+          [[ "${SECRET_3}" != "VALUE_3" ]] && echo "Could not export SECRET_3 secret, value is ${SECRET_3}" && exit 1
+          true
+        shell: bash
+
+  test-include-prefix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Export secrets to env variables (with prefix, include)
+        uses: ./
+        with:
+          prefix: PREF_
+          secrets: ${{ toJSON(secrets) }}
+          include: non-existent, SECRET_1
+      - name: Verify secrets to env variables (with prefix, include)
+        run: |
+          [[ "${SECRET_1}" != "" ]] && echo "SECRET_1 should be unset, got ${SECRET_1}" && exit 1
+          [[ "${PREF_SECRET_1}" != "VALUE_1" ]] && echo "Could not export SECRET_1 secret, value is ${SECRET_1}" && exit 1
+          [[ "${SECRET_2}" != "" ]] && echo "SECRET_2 should be unset, got ${SECRET_2}" && exit 1
+          [[ "${SECRET_3}" != "" ]] && echo "SECRET_3 should be unset, got ${SECRET_3}" && exit 1
+          [[ "${PREF_SECRET_2}" != "" ]] && echo "PREF_SECRET_2 should be unset, got ${PREF_SECRET_2}" && exit 1
+          [[ "${PREF_SECRET_3}" != "" ]] && echo "PREF_SECRET_3 should be unset, got ${PREF_SECRET_3}" && exit 1
+          true
+        shell: bash
+      
+  test-convert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Export secrets to env variables (convert)
+        uses: ./
+        with:
+          convert: pascal
+          secrets: ${{ toJSON(secrets) }}
+      - name: Verify secrets to env variables (convert)
+        run: |
+          [[ "${Secret_1}" != "VALUE_1" ]] && echo "Could not export Secret_1 secret, value is ${Secret_1}" && exit 1
+          [[ "${Secret_2}" != "VALUE_2" ]] && echo "Could not export Secret_2 secret, value is ${Secret_2}" && exit 1
+          [[ "${Secret_3}" != "VALUE_3" ]] && echo "Could not export Secret_3 secret, value is ${Secret_3}" && exit 1
+          true
+        shell: bash
+
+  # These jobs always fail, for now we just use it to check if the output is the expected
+  test-errors:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Bad secrets
+        uses: ./
+        with:
+          secrets: asdf
+        continue-on-error: true
+      - name: Bad convert value
+        uses: ./
+        with:
+          convert: bad
+          secrets: ${{ toJSON(secrets) }}
+        continue-on-error: true
