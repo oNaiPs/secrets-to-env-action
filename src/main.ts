@@ -12,6 +12,11 @@ async function run(): Promise<void> {
 
     for (const key of Object.keys(secrets)) {
       const newKey = prefix.length ? `${prefix}${key}` : key
+
+      if (process.env[newKey]) {
+        core.warning(`Will re-write "${newKey}" environment variable.`)
+      }
+
       core.exportVariable(newKey, secrets[key])
     }
 
