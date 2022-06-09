@@ -3,7 +3,7 @@ import * as core from '@actions/core'
 async function run(): Promise<void> {
   try {
     const secretsJson: string = core.getInput('secrets', {
-      // required: true
+      required: true
     })
 
     core.info(`AKI ${secretsJson}`)
@@ -12,7 +12,12 @@ async function run(): Promise<void> {
     try {
       secrets = JSON.parse(secretsJson)
     } catch (e) {
-      throw new Error(`Cannot parse JSON secrets`)
+      throw new Error(`Cannot parse JSON secrets.
+Make sure you add the following to this action:
+
+with:
+      secrets: \${{ toJSON(secrets) }}
+`)
     }
 
     const prefix: string = core.getInput('prefix')

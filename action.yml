@@ -3,9 +3,8 @@ description: 'Export github secrets to environment variables'
 author: 'Jose Pereira @oNaiPs'
 inputs:
   secrets:
-    required: false
+    required: true
     description: 'JSON representation of the secrets'
-    default: '{{ toJson(secrets) }}'
   prefix:
     required: false
     description: 'Prefix to add to all secrets, e.g.: SECRET_'
