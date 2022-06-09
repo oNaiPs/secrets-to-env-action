@@ -46,10 +46,20 @@ function run() {
             const secretsJson = core.getInput('secrets', {
             // required: true
             });
-            const secrets = JSON.parse(secretsJson);
+            core.info(`AKI ${secretsJson}`);
+            let secrets;
+            try {
+                secrets = JSON.parse(secretsJson);
+            }
+            catch (e) {
+                throw new Error(`Cannot parse JSON secrets`);
+            }
             const prefix = core.getInput('prefix');
             for (const key of Object.keys(secrets)) {
                 const newKey = prefix.length ? `${prefix}${key}` : key;
+                if (process.env[newKey]) {
+                    core.warning(`Will re-write "${newKey}" environment variable.`);
+                }
                 core.exportVariable(newKey, secrets[key]);
             }
             core.info(`Got Secrets!`);
