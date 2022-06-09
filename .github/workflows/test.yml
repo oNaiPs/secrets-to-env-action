@@ -15,4 +15,4 @@ jobs:
           echo AKI
           echo $TEST
         env:
-          TEST: {{ toJSON(secrets) }}
+          TEST: {{ toJSON(secrets.*) }}
