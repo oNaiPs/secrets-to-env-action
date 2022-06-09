@@ -1,12 +1,17 @@
 import * as core from '@actions/core'
 
-const excludeKeys = ['github_token']
+let excludeList = [
+  // this variable is already exported automatically
+  'github_token'
+]
 
 async function run(): Promise<void> {
   try {
     const secretsJson: string = core.getInput('secrets', {
       required: true
     })
+    const keyPrefix: string = core.getInput('prefix')
+    const excludeListStr: string = core.getInput('excludeList')
 
     let secrets: Record<string, string>
     try {
@@ -20,10 +25,16 @@ with:
 `)
     }
 
-    const keyPrefix: string = core.getInput('prefix')
+    if (excludeListStr.length) {
+      excludeList = excludeList.concat(
+        excludeListStr.split(',').map(key => key.trim())
+      )
+    }
+
+    core.debug(`Using exclude list: ${excludeList.join(', ')}`)
 
     for (const key of Object.keys(secrets)) {
-      if (excludeKeys.includes(key)) {
+      if (excludeList.includes(key)) {
         continue
       }
 

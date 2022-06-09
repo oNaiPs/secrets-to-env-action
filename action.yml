@@ -8,6 +8,9 @@ inputs:
   prefix:
     required: false
     description: 'Prefix to add to all secrets, e.g.: SECRET_'
+  excludeList:
+    required: false
+    description: 'Comma-separated list of secrets to skip exporting'
 runs:
   using: 'node16'
   main: 'dist/index.js'

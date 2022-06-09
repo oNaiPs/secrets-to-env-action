@@ -40,13 +40,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(186));
-const excludeKeys = ['github_token'];
+let excludeList = [
+    // this variable is already exported automatically
+    'github_token'
+];
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const secretsJson = core.getInput('secrets', {
                 required: true
             });
+            const keyPrefix = core.getInput('prefix');
+            const excludeListStr = core.getInput('excludeList');
             let secrets;
             try {
                 secrets = JSON.parse(secretsJson);
@@ -59,9 +64,12 @@ with:
       secrets: \${{ toJSON(secrets) }}
 `);
             }
-            const keyPrefix = core.getInput('prefix');
+            if (excludeListStr.length) {
+                excludeList = excludeList.concat(excludeListStr.split(',').map(key => key.trim()));
+            }
+            core.debug(`Using exclude list: ${excludeList.join(', ')}`);
             for (const key of Object.keys(secrets)) {
-                if (excludeKeys.includes(key)) {
+                if (excludeList.includes(key)) {
                     continue;
                 }
                 const newKey = keyPrefix.length ? `${keyPrefix}${key}` : key;
