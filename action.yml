@@ -4,7 +4,7 @@ author: 'Jose Pereira @oNaiPs'
 inputs:
   secrets:
     required: true
-    description: 'JSON representation of the secrets'
+    description: 'JSON representation of the secrets, use "${{ toJSON(secrets) }}"'
   prefix:
     required: false
     description: 'Prefix to add to all secrets, e.g.: SECRET_'
