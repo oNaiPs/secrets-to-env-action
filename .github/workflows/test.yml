@@ -23,9 +23,9 @@ jobs:
         with:
           secrets: ${{ toJSON(secrets) }}
       - run: |
-          [["${AAA}" != "AAA"]] && echo "Could not convert AAA secret" && exit 1
-          [["${BBB}" != "BBB"]] && echo "Could not convert BBB secret" && exit 1
-          [["${CCC}" != "CCC"]] && echo "Could not convert CCC secret" && exit 1
+          [[ "${AAA}" != "AAA" ]] && echo "Could not convert AAA secret" && exit 1
+          [[ "${BBB}" != "BBB" ]] && echo "Could not convert BBB secret" && exit 1
+          [[ "${CCC}" != "CCC" ]] && echo "Could not convert CCC secret" && exit 1
         shell: bash
         # env:
           # CCC: CC
