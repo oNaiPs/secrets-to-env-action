@@ -44,8 +44,6 @@ with:
         core.warning(`Will re-write "${newKey}" environment variable.`)
       }
 
-      core.info(secrets[key].split('').toString())
-
       core.exportVariable(newKey, secrets[key])
     }
 
