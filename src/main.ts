@@ -6,7 +6,14 @@ async function run(): Promise<void> {
       // required: true
     })
 
-    const secrets: Record<string, string> = JSON.parse(secretsJson)
+    core.info(`AKI ${secretsJson}`)
+
+    let secrets: Record<string, string>
+    try {
+      secrets = JSON.parse(secretsJson)
+    } catch (e) {
+      throw new Error(`Cannot parse JSON secrets`)
+    }
 
     const prefix: string = core.getInput('prefix')
 
