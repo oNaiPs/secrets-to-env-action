@@ -29,7 +29,7 @@ jobs:
           node-version: 16.x
 
       - name: Install dependencies
-        run: yarn ci
+        run: yarn install --frozen-lockfile
 
       - name: Rebuild the dist/ directory
         run: |
