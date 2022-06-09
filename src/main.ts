@@ -1,5 +1,7 @@
 import * as core from '@actions/core'
 
+const excludeKeys = ['github_token']
+
 async function run(): Promise<void> {
   try {
     const secretsJson: string = core.getInput('secrets', {
@@ -21,6 +23,10 @@ with:
     const keyPrefix: string = core.getInput('prefix')
 
     for (const key of Object.keys(secrets)) {
+      if (excludeKeys.includes(key)) {
+        continue
+      }
+
       const newKey = keyPrefix.length ? `${keyPrefix}${key}` : key
 
       if (process.env[newKey]) {

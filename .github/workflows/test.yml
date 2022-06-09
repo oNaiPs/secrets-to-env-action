@@ -25,8 +25,8 @@ jobs:
           secrets: ${{ toJSON(secrets) }}
       - name: Verify secrets to env variables
         run: |
-          [[ "${SECRET_1}" != "VALUE_1" ]] && echo "Could not convert SECRET_1 secret" && exit 1
-          [[ "${SECRET_2}" != "VALUE_2" ]] && echo "Could not convert SECRET_2 secret" && exit 1
+          [[ "${SECRET_1}" != "VALUE_1" ]] && echo "Could not convert SECRET_1 secret, value is ${SECRET_1}" && exit 1
+          [[ "${SECRET_2}" != "VALUE_2" ]] && echo "Could not convert SECRET_2 secret, value is ${SECRET_2}" && exit 1
         shell: bash
       - name: Convert secrets to env variables (with prefix)
         uses: ./
@@ -37,6 +37,6 @@ jobs:
           SECRET_1: 1234 # Should show override warning
       - name: Verify secrets to env variables (with prefix)
         run: |
-          [[ "${PREF_SECRET_1}" != "VALUE_1" ]] && echo "Could not convert PREF_SECRET_1 secret" && exit 1
-          [[ "${PREF_SECRET_2}" != "VALUE_2" ]] && echo "Could not convert PREF_SECRET_2 secret" && exit 1
+          [[ "${SECRET_1}" != "VALUE_1" ]] && echo "Could not convert SECRET_1 secret, value is ${SECRET_1}" && exit 1
+          [[ "${SECRET_2}" != "VALUE_2" ]] && echo "Could not convert SECRET_2 secret, value is ${SECRET_2}" && exit 1
         shell: bash
