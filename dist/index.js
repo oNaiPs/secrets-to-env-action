@@ -44,7 +44,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const secretsJson = core.getInput('secrets', {
-            // required: true
+                required: true
             });
             core.info(`AKI ${secretsJson}`);
             let secrets;
@@ -52,7 +52,12 @@ function run() {
                 secrets = JSON.parse(secretsJson);
             }
             catch (e) {
-                throw new Error(`Cannot parse JSON secrets`);
+                throw new Error(`Cannot parse JSON secrets.
+Make sure you add the following to this action:
+
+with:
+      secrets: \${{ toJSON(secrets) }}
+`);
             }
             const prefix = core.getInput('prefix');
             for (const key of Object.keys(secrets)) {

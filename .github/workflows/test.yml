@@ -20,8 +20,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./
-        with:
-          secrets: ${{ toJSON(secrets) }}
+        # with:
+          # secrets: ${{ toJSON(secrets) }}
       - run: |
           ["${AAA}" != "AAA"] && echo "Could not convert AAA secret" && exit 1
           ["${BBB}" != "BBB"] && echo "Could not convert BBB secret" && exit 1
