@@ -6,8 +6,44 @@
 
 This action provides the following functionality for GitHub Actions users:
 
-- Read Github secrets and export them as environment variables
+- Read Github secrets and export **all** of them as environment variables
 - Optionally including, excluding and manipulating variables as needed before importing
+
+<table>
+<tr>
+<th>
+Before
+</th>
+<th>
+After
+</th>
+</tr>
+<tr>
+<td>
+<pre>
+- run: echo "Value of MY_SECRET1: $MY_SECRET1"
+  env:
+    MY_SECRET1: ${{ secrets.MY_SECRET1 }}
+    MY_SECRET2: ${{ secrets.MY_SECRET2 }}
+    MY_SECRET3: ${{ secrets.MY_SECRET3 }}
+    MY_SECRET4: ${{ secrets.MY_SECRET4 }}
+    MY_SECRET5: ${{ secrets.MY_SECRET5 }}
+    MY_SECRET6: ${{ secrets.MY_SECRET6 }}
+    ...
+</pre>
+</td>
+
+<td>
+<pre>
+- uses: oNaiPs/secrets-to-env-action@v1
+  with:
+    secrets: ${{ toJSON(secrets) }}
+- run: echo "Value of MY_SECRET1: $MY_SECRET1"
+</pre>
+</td>
+
+</tr>
+</table>
 
 ## Usage
 
@@ -19,6 +55,7 @@ Add the following action to your workflow:
     secrets: ${{ toJSON(secrets) }}
 ```
 
+After running this action, subsequent actions will be able to access the secrets as env variables.
 Note the `secrets` key. It is **mandatory** so the action can read and export the secrets.
 
 **Basic:**
@@ -43,7 +80,7 @@ steps:
   with:
     secrets: ${{ toJSON(secrets) }}
     exclude: MY_SECRET
-# MY_SECRET is not export
+# MY_SECRET is not exported
 ```
 
 **Only** include secret `MY_SECRET`
@@ -88,6 +125,10 @@ steps:
     convert: lower
 - run: echo "Value of my_secret: $my_secret"
 ```
+
+## How it works
+
+This action uses the input in `secrets` to read all the secrets in the JSON format, and exporting all the variables one by one.
 
 ## License
 
