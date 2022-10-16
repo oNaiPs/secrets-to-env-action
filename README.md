@@ -1,7 +1,7 @@
 # secrets-to-env
 
 <p align="center">
-  <a href="https://github.com/oNaiPs/secrets-to-env-action/actions"><img alt="secrets-to-env-action status" src="https://github.com/oNaiPs/secrets-to-env-action/workflows/build-test/badge.svg"></a>
+  <a href="https://github.com/compasspathways/secrets-to-env-action/actions"><img alt="secrets-to-env-action status" src="https://github.com/compasspathways/secrets-to-env-action/workflows/build-test/badge.svg"></a>
 </p>
 
 This action provides the following functionality for GitHub Actions users:
@@ -35,7 +35,7 @@ After
 
 <td>
 <pre>
-- uses: oNaiPs/secrets-to-env-action@v1
+- uses: compasspathways/secrets-to-env-action@v1
   with:
     secrets: ${{ toJSON(secrets) }}
 - run: echo "Value of MY_SECRET1: $MY_SECRET1"
@@ -50,7 +50,7 @@ After
 Add the following action to your workflow:
 
 ```yaml
-- uses: oNaiPs/secrets-to-env-action@v1
+- uses: compasspathways/secrets-to-env-action@v1
   with:
     secrets: ${{ toJSON(secrets) }}
 ```
@@ -63,7 +63,7 @@ Note the `secrets` key. It is **mandatory** so the action can read and export th
 ```yaml
 steps:
 - uses: actions/checkout@v3
-- uses: oNaiPs/secrets-to-env-action@v1
+- uses: compasspathways/secrets-to-env-action@v1
   with:
     secrets: ${{ toJSON(secrets) }}
 - run: echo "Value of MY_SECRET: $MY_SECRET"
@@ -76,7 +76,7 @@ Exclude defined secret `MY_SECRET` from list of secrets.
 ```yaml
 steps:
 - uses: actions/checkout@v3
-- uses: oNaiPs/secrets-to-env-action@v1
+- uses: compasspathways/secrets-to-env-action@v1
   with:
     secrets: ${{ toJSON(secrets) }}
     exclude: MY_SECRET
@@ -88,7 +88,7 @@ steps:
 ```yaml
 steps:
 - uses: actions/checkout@v3
-- uses: oNaiPs/secrets-to-env-action@v1
+- uses: compasspathways/secrets-to-env-action@v1
   with:
     secrets: ${{ toJSON(secrets) }}
     include: MY_SECRET
@@ -104,7 +104,7 @@ Adds a prefix to all exported secrets.
 ```yaml
 steps:
 - uses: actions/checkout@v3
-- uses: oNaiPs/secrets-to-env-action@v1
+- uses: compasspathways/secrets-to-env-action@v1
   with:
     secrets: ${{ toJSON(secrets) }}
     prefix: PREFIXED_
@@ -119,7 +119,7 @@ Available: `lower, upper, camel, constant, pascal, snake`.
 ```yaml
 steps:
 - uses: actions/checkout@v3
-- uses: oNaiPs/secrets-to-env-action@v1
+- uses: compasspathways/secrets-to-env-action@v1
   with:
     secrets: ${{ toJSON(secrets) }}
     convert: lower
