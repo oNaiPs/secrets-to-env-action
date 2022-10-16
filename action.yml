@@ -1,6 +1,6 @@
 name: 'Export all secrets to env variables'
 description: 'Utility action that exports all github secrets to environment variables'
-author: 'Jose Pereira @oNaiPs'
+author: 'Jose Pereira @oNaiPs & Tamas Kadar @KTamas'
 inputs:
   secrets:
     required: true
@@ -17,6 +17,9 @@ inputs:
   convert:
     required: false
     description: 'Converts secrets name to a specific string format'
+  starts_with:
+    required: false
+    description: 'Only export secrets that start with the provided string'
 runs:
   using: 'node16'
   main: 'dist/index.js'
