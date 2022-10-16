@@ -136,4 +136,6 @@ The scripts and documentation in this project are released under the [MIT Licens
 
 ## Contributions
 
-Contributions are welcome!
+Contributions are welcome! Past contributors:
+
+- Tamas Kadar @KTamas

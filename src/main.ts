@@ -28,6 +28,7 @@ async function run(): Promise<void> {
     const includeListStr: string = core.getInput('include')
     const excludeListStr: string = core.getInput('exclude')
     const convert: string = core.getInput('convert')
+    const startsWith: string = core.getInput('starts_with')
 
     let secrets: Record<string, string>
     try {
@@ -61,6 +62,10 @@ with:
       }
 
       if (excludeList.includes(key)) {
+        continue
+      }
+
+      if (startsWith && !key.startsWith(startsWith)) {
         continue
       }
 
