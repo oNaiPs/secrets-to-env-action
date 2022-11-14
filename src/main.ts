@@ -29,6 +29,7 @@ async function run(): Promise<void> {
     const excludeListStr: string = core.getInput('exclude')
     const convert: string = core.getInput('convert')
     const startsWith: string = core.getInput('starts_with')
+    const startsWithConvertPrefix = core.getInput('starts_with_convert_prefix')
 
     let secrets: Record<string, string>
     try {
@@ -79,7 +80,13 @@ with:
             ).join(', ')}`
           )
         }
-        newKey = convertTypes[convert](newKey)
+        if (startsWith && startsWithConvertPrefix === 'false') {
+          newKey = `${startsWith}${convertTypes[convert](
+            newKey.replace(startsWith, '')
+          )}`
+        } else {
+          newKey = convertTypes[convert](newKey)
+        }
       }
 
       if (process.env[newKey]) {

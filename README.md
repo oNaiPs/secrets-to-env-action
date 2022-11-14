@@ -111,6 +111,33 @@ steps:
 - run: echo "Value of PREFIXED_MY_SECRET: $PREFIXED_MY_SECRET"
 ```
 
+**Only export secrets that start with a given string:**
+
+```yaml
+steps:
+- uses: actions/checkout@v3
+- uses: oNaiPs/secrets-to-env-action@v1
+  with:
+    secrets: ${{ toJSON(secrets) }}
+    starts_with: PREFIX_
+- run: env
+# observe that only vars with PREFIX_ were exported
+```
+
+**Only apply string conversions (see below) for secrets that start with a given string:**
+
+```yaml
+steps:
+- uses: actions/checkout@v3
+- uses: oNaiPs/secrets-to-env-action@v1
+  with:
+    secrets: ${{ toJSON(secrets) }}
+    starts_with: PREFIX_
+    starts_with_convert_prefix: false
+    convert: lower
+- run: env | grep 'PREFIX_'
+```
+
 **Convert:**
 
 Converts all exported secrets according to a [template](https://github.com/blakeembrey/change-case#core).
