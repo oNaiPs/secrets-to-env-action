@@ -20,6 +20,9 @@ inputs:
   starts_with:
     required: false
     description: 'Only export secrets that start with the provided string'
+  convert_prefix:
+    required: false
+    description: 'If used with starts_with, only convert the non-matching part of the secret name'
 runs:
   using: 'node16'
   main: 'dist/index.js'

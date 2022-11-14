@@ -67,6 +67,7 @@ function run() {
             const excludeListStr = core.getInput('exclude');
             const convert = core.getInput('convert');
             const startsWith = core.getInput('starts_with');
+            const convertPrefix = core.getInput('convert_prefix');
             let secrets;
             try {
                 secrets = JSON.parse(secretsJson);
@@ -103,7 +104,12 @@ with:
                     if (!convertTypes[convert]) {
                         throw new Error(`Unknown convert value "${convert}". Available: ${Object.keys(convertTypes).join(', ')}`);
                     }
-                    newKey = convertTypes[convert](newKey);
+                    if (startsWith && convertPrefix === 'false') {
+                        newKey = `${startsWith}${convertTypes[convert](newKey.replace(startsWith, ''))}`;
+                    }
+                    else {
+                        newKey = convertTypes[convert](newKey);
+                    }
                 }
                 if (process.env[newKey]) {
                     core.warning(`Will re-write "${newKey}" environment variable.`);
