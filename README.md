@@ -111,6 +111,32 @@ steps:
 - run: echo "Value of PREFIXED_MY_SECRET: $PREFIXED_MY_SECRET"
 ```
 
+**Only export secrets that start with a given string:**
+
+```yaml
+steps:
+- uses: actions/checkout@v3
+- uses: compasspathways/secrets-to-env-action@v1
+  with:
+    secrets: ${{ toJSON(secrets) }}
+    starts_with: TF_VAR_
+- run: env | grep 'TF_VAR_'
+```
+
+**Only apply string conversions (see below) for secrets that start with a given string:**
+
+```yaml
+steps:
+- uses: actions/checkout@v3
+- uses: compasspathways/secrets-to-env-action@v1
+  with:
+    secrets: ${{ toJSON(secrets) }}
+    starts_with: TF_VAR_
+    convert: lower
+    convert_prefix: false
+- run: env | grep 'TF_VAR_'
+```
+
 **Convert:**
 
 Converts all exported secrets according to a [template](https://github.com/blakeembrey/change-case#core).
