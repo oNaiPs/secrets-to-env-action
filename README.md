@@ -136,12 +136,11 @@ steps:
 - uses: oNaiPs/secrets-to-env-action@v1
   with:
     secrets: ${{ toJSON(secrets) }}
-    starts_with: PREFIX_
+    prefix: PREFIX_
     convert: lower
     convert_prefix: false
 - run: env
-# observe that only vars with PREFIX_ were exported
-# E.g. secret with PREFIX_KEY_1 would become PREFIX_key_1
+# E.g. secret with MY_SECRET would become PREFIX_my_secret
 ```
 
 ## How it works

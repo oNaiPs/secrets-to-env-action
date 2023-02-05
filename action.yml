@@ -19,7 +19,7 @@ inputs:
     description: 'Converts secrets name to a specific string format'
   convert_prefix:
     required: false
-    description: 'When used with prefix or starts_with, include prefix (or not) on conversion'
+    description: 'Include prefix (or not) on conversion. True by default'
 runs:
   using: 'node16'
   main: 'dist/index.js'
