@@ -71,7 +71,7 @@ steps:
 
 **Include or exclude secrets:**
 
-Exclude defined secret `MY_SECRET` from list of secrets.
+Exclude defined secret(s) from list of secrets (comma separated).
 
 ```yaml
 steps:
@@ -79,11 +79,11 @@ steps:
 - uses: oNaiPs/secrets-to-env-action@v1
   with:
     secrets: ${{ toJSON(secrets) }}
-    exclude: MY_SECRET
+    exclude: MY_SECRET, MY_OTHER_SECRET
 # MY_SECRET is not exported
 ```
 
-**Only** include secret `MY_SECRET`
+**Only** include secret(s) from list of secrets (comma separated).
 
 ```yaml
 steps:
@@ -91,7 +91,7 @@ steps:
 - uses: oNaiPs/secrets-to-env-action@v1
   with:
     secrets: ${{ toJSON(secrets) }}
-    include: MY_SECRET
+    include: MY_SECRET, MY_OTHER_SECRET
 - run: echo "Value of MY_SECRET: $MY_SECRET"
 ```
 
