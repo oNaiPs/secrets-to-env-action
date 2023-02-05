@@ -135,7 +135,9 @@ steps:
     starts_with: PREFIX_
     starts_with_convert_prefix: false
     convert: lower
-- run: env | grep 'PREFIX_'
+- run: env
+# observe that only vars with PREFIX_ were exported
+# E.g. secret with PREFIX_KEY_1 would become PREFIX_key_1
 ```
 
 **Convert:**
