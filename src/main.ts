@@ -5,11 +5,6 @@ import {constantCase} from 'constant-case'
 import {pascalCase} from 'pascal-case'
 import {snakeCase} from 'snake-case'
 
-let excludeList = [
-  // this variable is already exported automatically
-  'github_token'
-]
-
 const convertTypes: Record<string, (s: string) => string> = {
   lower: s => s.toLowerCase(),
   upper: s => s.toUpperCase(),
@@ -19,7 +14,12 @@ const convertTypes: Record<string, (s: string) => string> = {
   snake: snakeCase
 }
 
-async function run(): Promise<void> {
+export default async function run(): Promise<void> {
+  let excludeList = [
+    // this variable is already exported automatically
+    'github_token'
+  ]
+
   try {
     const secretsJson: string = core.getInput('secrets', {
       required: true
@@ -28,8 +28,10 @@ async function run(): Promise<void> {
     const includeListStr: string = core.getInput('include')
     const excludeListStr: string = core.getInput('exclude')
     const convert: string = core.getInput('convert')
-    const startsWith: string = core.getInput('starts_with')
-    const startsWithConvertPrefix = core.getInput('starts_with_convert_prefix')
+    const convertPrefixStr = core.getInput('convert_prefix')
+    const convertPrefix = convertPrefixStr.length
+      ? convertPrefixStr === 'true'
+      : true
 
     let secrets: Record<string, string>
     try {
@@ -58,15 +60,11 @@ with:
     core.debug(`Using exclude list: ${excludeList.join(', ')}`)
 
     for (const key of Object.keys(secrets)) {
-      if (includeList && !includeList.includes(key)) {
+      if (includeList && !includeList.some(inc => key.match(new RegExp(inc)))) {
         continue
       }
 
-      if (excludeList.includes(key)) {
-        continue
-      }
-
-      if (startsWith && !key.startsWith(startsWith)) {
+      if (excludeList.some(inc => key.match(new RegExp(inc)))) {
         continue
       }
 
@@ -80,9 +78,10 @@ with:
             ).join(', ')}`
           )
         }
-        if (startsWith && startsWithConvertPrefix === 'false') {
-          newKey = `${startsWith}${convertTypes[convert](
-            newKey.replace(startsWith, '')
+
+        if (!convertPrefix) {
+          newKey = `${keyPrefix}${convertTypes[convert](
+            newKey.replace(keyPrefix, '')
           )}`
         } else {
           newKey = convertTypes[convert](newKey)
@@ -101,4 +100,6 @@ with:
   }
 }
 
-run()
+if (require.main === module) {
+  run()
+}

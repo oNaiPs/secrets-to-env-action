@@ -71,7 +71,7 @@ steps:
 
 **Include or exclude secrets:**
 
-Exclude defined secret(s) from list of secrets (comma separated).
+Exclude defined secret(s) from list of secrets (comma separated, supports regex).
 
 ```yaml
 steps:
@@ -79,11 +79,11 @@ steps:
 - uses: oNaiPs/secrets-to-env-action@v1
   with:
     secrets: ${{ toJSON(secrets) }}
-    exclude: MY_SECRET, MY_OTHER_SECRET
+    exclude: MY_SECRET, MY_OTHER_SECRETS*
 # MY_SECRET is not exported
 ```
 
-**Only** include secret(s) from list of secrets (comma separated).
+**Only** include secret(s) from list of secrets (comma separated, supports regex).
 
 ```yaml
 steps:
@@ -91,9 +91,11 @@ steps:
 - uses: oNaiPs/secrets-to-env-action@v1
   with:
     secrets: ${{ toJSON(secrets) }}
-    include: MY_SECRET, MY_OTHER_SECRET
+    include: MY_SECRET, MY_OTHER_SECRETS*
 - run: echo "Value of MY_SECRET: $MY_SECRET"
 ```
+
+To export secrets that start with a given string, you can use `include: PREFIX_*`.
 
 NOTE: If specified secret does not exist, it is ignored.
 
@@ -111,35 +113,6 @@ steps:
 - run: echo "Value of PREFIXED_MY_SECRET: $PREFIXED_MY_SECRET"
 ```
 
-**Only export secrets that start with a given string:**
-
-```yaml
-steps:
-- uses: actions/checkout@v3
-- uses: oNaiPs/secrets-to-env-action@v1
-  with:
-    secrets: ${{ toJSON(secrets) }}
-    starts_with: PREFIX_
-- run: env
-# observe that only vars with PREFIX_ were exported
-```
-
-**Only apply string conversions (see below) for secrets that start with a given string:**
-
-```yaml
-steps:
-- uses: actions/checkout@v3
-- uses: oNaiPs/secrets-to-env-action@v1
-  with:
-    secrets: ${{ toJSON(secrets) }}
-    starts_with: PREFIX_
-    starts_with_convert_prefix: false
-    convert: lower
-- run: env
-# observe that only vars with PREFIX_ were exported
-# E.g. secret with PREFIX_KEY_1 would become PREFIX_key_1
-```
-
 **Convert:**
 
 Converts all exported secrets according to a [template](https://github.com/blakeembrey/change-case#core).
@@ -153,6 +126,22 @@ steps:
     secrets: ${{ toJSON(secrets) }}
     convert: lower
 - run: echo "Value of my_secret: $my_secret"
+```
+
+**Include or skip the prefix on conversion (default is true):**
+
+```yaml
+steps:
+- uses: actions/checkout@v3
+- uses: oNaiPs/secrets-to-env-action@v1
+  with:
+    secrets: ${{ toJSON(secrets) }}
+    starts_with: PREFIX_
+    convert: lower
+    convert_prefix: false
+- run: env
+# observe that only vars with PREFIX_ were exported
+# E.g. secret with PREFIX_KEY_1 would become PREFIX_key_1
 ```
 
 ## How it works

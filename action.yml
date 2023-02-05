@@ -17,12 +17,9 @@ inputs:
   convert:
     required: false
     description: 'Converts secrets name to a specific string format'
-  starts_with:
+  convert_prefix:
     required: false
-    description: 'Only export secrets that start with the provided string'
-  starts_with_convert_prefix:
-    required: false
-    description: 'When used with starts_with, only convert the non-matching part of the secret name'
+    description: 'When used with prefix or starts_with, include prefix (or not) on conversion'
 runs:
   using: 'node16'
   main: 'dist/index.js'

@@ -44,10 +44,6 @@ const camel_case_1 = __nccwpck_require__(638);
 const constant_case_1 = __nccwpck_require__(878);
 const pascal_case_1 = __nccwpck_require__(995);
 const snake_case_1 = __nccwpck_require__(213);
-let excludeList = [
-    // this variable is already exported automatically
-    'github_token'
-];
 const convertTypes = {
     lower: s => s.toLowerCase(),
     upper: s => s.toUpperCase(),
@@ -58,6 +54,10 @@ const convertTypes = {
 };
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
+        let excludeList = [
+            // this variable is already exported automatically
+            'github_token'
+        ];
         try {
             const secretsJson = core.getInput('secrets', {
                 required: true
@@ -66,8 +66,10 @@ function run() {
             const includeListStr = core.getInput('include');
             const excludeListStr = core.getInput('exclude');
             const convert = core.getInput('convert');
-            const startsWith = core.getInput('starts_with');
-            const startsWithConvertPrefix = core.getInput('starts_with_convert_prefix');
+            const convertPrefixStr = core.getInput('convert_prefix');
+            const convertPrefix = convertPrefixStr.length
+                ? convertPrefixStr === 'true'
+                : true;
             let secrets;
             try {
                 secrets = JSON.parse(secretsJson);
@@ -90,13 +92,10 @@ with:
             core.debug(`Using include list: ${includeList === null || includeList === void 0 ? void 0 : includeList.join(', ')}`);
             core.debug(`Using exclude list: ${excludeList.join(', ')}`);
             for (const key of Object.keys(secrets)) {
-                if (includeList && !includeList.includes(key)) {
+                if (includeList && !includeList.some(inc => key.match(new RegExp(inc)))) {
                     continue;
                 }
-                if (excludeList.includes(key)) {
-                    continue;
-                }
-                if (startsWith && !key.startsWith(startsWith)) {
+                if (excludeList.some(inc => key.match(new RegExp(inc)))) {
                     continue;
                 }
                 let newKey = keyPrefix.length ? `${keyPrefix}${key}` : key;
@@ -104,8 +103,8 @@ with:
                     if (!convertTypes[convert]) {
                         throw new Error(`Unknown convert value "${convert}". Available: ${Object.keys(convertTypes).join(', ')}`);
                     }
-                    if (startsWith && startsWithConvertPrefix === 'false') {
-                        newKey = `${startsWith}${convertTypes[convert](newKey.replace(startsWith, ''))}`;
+                    if (!convertPrefix) {
+                        newKey = `${keyPrefix}${convertTypes[convert](newKey.replace(keyPrefix, ''))}`;
                     }
                     else {
                         newKey = convertTypes[convert](newKey);
@@ -124,7 +123,10 @@ with:
         }
     });
 }
-run();
+exports["default"] = run;
+if (require.main === require.cache[eval('__filename')]) {
+    run();
+}
 
 
 /***/ }),

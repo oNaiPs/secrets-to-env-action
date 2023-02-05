@@ -1,21 +1,11 @@
-name: 'build-test'
+name: 'e2e'
 on:
-  pull_request:
   push:
     branches:
       - main
       - 'releases/*'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: |
-          npm install
-      - run: |
-          npm run all
-  
   test-exclude:
     runs-on: ubuntu-latest
     steps:
@@ -55,7 +45,7 @@ jobs:
           [[ "${PREF_SECRET_3}" != "" ]] && echo "PREF_SECRET_3 should be unset, got ${PREF_SECRET_3}" && exit 1
           true
         shell: bash
-      
+
   test-convert:
     runs-on: ubuntu-latest
     steps:
@@ -70,6 +60,25 @@ jobs:
           [[ "${Secret_1}" != "VALUE_1" ]] && echo "Could not export Secret_1 secret, value is ${Secret_1}" && exit 1
           [[ "${Secret_2}" != "VALUE_2" ]] && echo "Could not export Secret_2 secret, value is ${Secret_2}" && exit 1
           [[ "${Secret_3}" != "VALUE_3" ]] && echo "Could not export Secret_3 secret, value is ${Secret_3}" && exit 1
+          true
+        shell: bash
+
+  test-convert-prefix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Export secrets to env variables (starts with, include)
+        uses: ./
+        with:
+          prefix: MY_
+          convert_prefix: false
+          convert: lower
+          secrets: ${{ toJSON(secrets) }}
+      - name: Verify secrets to env variables (starts with, include)
+        run: |
+          [[ "${MY_secret_1}" != "VALUE_1" ]] && echo "Could not export MY_secret_1 secret, value is ${MY_secret_1}" && exit 1
+          [[ "${MY_secret_2}" != "VALUE_2" ]] && echo "Could not export MY_secret_2 secret, value is ${MY_secret_2}" && exit 1
+          [[ "${MY_secret_3}" != "VALUE_3" ]] && echo "Could not export MY_secret_3 secret, value is ${MY_secret_3}" && exit 1
           true
         shell: bash
 
