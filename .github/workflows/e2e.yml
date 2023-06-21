@@ -46,6 +46,23 @@ jobs:
           true
         shell: bash
 
+  test-override:
+    runs-on: ubuntu-latest
+    env:
+      SECRET_1: DONT_OVERRIDE
+    steps:
+      - uses: actions/checkout@v3
+      - name: Export secrets to env variables (override)
+        uses: ./
+        with:
+          override: false
+          secrets: ${{ toJSON(secrets) }}
+      - name: Verify secrets to env variables (override)
+        run: |
+          [[ "${SECRET_1}" != "DONT_OVERRIDE" ]] && echo "Override test failed" && exit 1
+          true
+        shell: bash
+
   test-convert:
     runs-on: ubuntu-latest
     steps:

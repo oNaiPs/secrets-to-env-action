@@ -70,6 +70,8 @@ function run() {
             const convertPrefix = convertPrefixStr.length
                 ? convertPrefixStr === 'true'
                 : true;
+            const overrideStr = core.getInput('override');
+            const override = overrideStr.length ? overrideStr === 'true' : true;
             let secrets;
             try {
                 secrets = JSON.parse(secretsJson);
@@ -111,7 +113,13 @@ with:
                     }
                 }
                 if (process.env[newKey]) {
-                    core.warning(`Will re-write "${newKey}" environment variable.`);
+                    if (override) {
+                        core.warning(`Will re-write "${newKey}" environment variable.`);
+                    }
+                    else {
+                        core.info(`Skip overwriting secret ${newKey}`);
+                        continue;
+                    }
                 }
                 core.exportVariable(newKey, secrets[key]);
                 core.info(`Exported secret ${newKey}`);

@@ -32,6 +32,8 @@ export default async function run(): Promise<void> {
     const convertPrefix = convertPrefixStr.length
       ? convertPrefixStr === 'true'
       : true
+    const overrideStr: string = core.getInput('override')
+    const override = overrideStr.length ? overrideStr === 'true' : true
 
     let secrets: Record<string, string>
     try {
@@ -89,7 +91,12 @@ with:
       }
 
       if (process.env[newKey]) {
-        core.warning(`Will re-write "${newKey}" environment variable.`)
+        if (override) {
+          core.warning(`Will re-write "${newKey}" environment variable.`)
+        } else {
+          core.info(`Skip overwriting secret ${newKey}`)
+          continue
+        }
       }
 
       core.exportVariable(newKey, secrets[key])

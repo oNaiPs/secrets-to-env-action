@@ -212,4 +212,35 @@ describe('secrets-to-env-action', () => {
       PREFIX_my_secret_2: inputSecrets.MY_SECRET_2
     })
   })
+
+  it('overrides variables', () => {
+    process.env = {
+      MY_SECRET_1: 'OVERRIDE'
+    }
+
+    mockInputs({
+      secrets: JSON.stringify(inputSecrets),
+      override: 'true'
+    })
+    main()
+
+    expect(newSecrets).toEqual(inputSecrets)
+  })
+
+  it('does not override variables', () => {
+    process.env = {
+      MY_SECRET_1: 'DONT_OVERRIDE'
+    }
+
+    mockInputs({
+      secrets: JSON.stringify(inputSecrets),
+      override: 'false'
+    })
+    main()
+
+    const filteredNewSecrets = Object.assign({}, newSecrets)
+    delete filteredNewSecrets.MY_SECRET_1
+
+    expect(newSecrets).toEqual(filteredNewSecrets)
+  })
 })

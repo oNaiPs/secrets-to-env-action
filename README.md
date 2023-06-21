@@ -113,6 +113,23 @@ steps:
 - run: echo "Value of PREFIXED_MY_SECRET: $PREFIXED_MY_SECRET"
 ```
 
+**Override:**
+
+Overrides already existing variables (default is true)
+
+```yaml
+env:
+  MY_SECRET: DONT_OVERRIDE
+steps:
+- uses: actions/checkout@v3
+- uses: oNaiPs/secrets-to-env-action@v1
+  with:
+    secrets: ${{ toJSON(secrets) }}
+    override: false
+- run: echo "Value of MY_SECRET: $MY_SECRET"
+Value of MY_SECRET: DONT_OVERRIDE
+```
+
 **Convert:**
 
 Converts all exported secrets according to a [template](https://github.com/blakeembrey/change-case#core).
