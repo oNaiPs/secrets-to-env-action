@@ -1,23 +1,18 @@
-# `dist/index.js` is a special file in Actions.
-# When you reference an action with `uses:` in a workflow,
-# `index.js` is the code that will run.
-# For our project, we generate this file through a build process from other source files.
-# We need to make sure the checked-in `index.js` actually matches what we expect it to be.
-name: Check dist/
+name: Build
 
 on:
   push:
     branches:
       - main
     paths-ignore:
-      - '**.md'
+      - "**.md"
   pull_request:
     paths-ignore:
-      - '**.md'
+      - "**.md"
   workflow_dispatch:
 
 jobs:
-  check-dist:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -31,10 +26,9 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Rebuild the dist/ directory
+      - name: Run build pipeline
         run: |
-          yarn run build
-          yarn run package
+          yarn run all
 
       - name: Compare the expected and actual dist/ directories
         run: |
