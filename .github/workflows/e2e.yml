@@ -9,7 +9,7 @@ jobs:
   test-exclude:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Export secrets to env variables (with exclude)
         uses: ./
         with:
@@ -28,7 +28,7 @@ jobs:
   test-include-prefix:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Export secrets to env variables (with prefix, include)
         uses: ./
         with:
@@ -51,7 +51,7 @@ jobs:
     env:
       SECRET_1: DONT_OVERRIDE
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Export secrets to env variables (override)
         uses: ./
         with:
@@ -66,7 +66,7 @@ jobs:
   test-convert:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Export secrets to env variables (convert)
         uses: ./
         with:
@@ -83,7 +83,7 @@ jobs:
   test-convert-prefix:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Export secrets to env variables (starts with, include)
         uses: ./
         with:
@@ -103,7 +103,7 @@ jobs:
   test-errors:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Bad secrets
         uses: ./
         with:
