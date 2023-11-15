@@ -14,14 +14,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: node:20.9.0-alpine
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Install git
+        run: |
+          apk add --no-cache git
+          git config --global --add safe.directory $(realpath .)
 
-      - name: Set Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20.x
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: yarn install --immutable
