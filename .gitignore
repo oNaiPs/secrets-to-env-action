@@ -1,5 +1,11 @@
-# Dependency directory
-node_modules
+# yarn
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 
 # Rest pulled from https://github.com/github/gitignore/blob/master/Node.gitignore
 # Logs
