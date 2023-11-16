@@ -26,7 +26,7 @@
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.10.1",
-    "camel-case": "^4.1.2",
+    "camel-case": "^5.0.0",
     "constant-case": "^3.0.4",
     "pascal-case": "^3.1.2",
     "snake-case": "^3.0.4"
