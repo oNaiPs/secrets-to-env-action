@@ -21,7 +21,7 @@ inputs:
     required: false
     description: 'Include prefix (or not) on conversion. True by default'
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
 branding:
   icon: book-open
