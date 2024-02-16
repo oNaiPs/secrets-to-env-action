@@ -13,7 +13,7 @@ jobs:
       - name: Export secrets to env variables (with exclude)
         uses: ./
         with:
-          secrets: ${{ toJSON(secrets) }}
+          secrets: ${{ toJSON(vars) }}
           exclude: non-existent,SECRET_2
         env:
           SECRET_1: 1234 # Should show override warning
