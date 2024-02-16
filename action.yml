@@ -5,6 +5,9 @@ inputs:
   secrets:
     required: true
     description: JSON representation of the secrets, use provided placeholder'
+  variables:
+    required: true
+    description: JSON representation of the variables, use provided placeholder'
   prefix:
     required: false
     description: 'Prefix to add to all secrets, e.g.: SECRET_'
