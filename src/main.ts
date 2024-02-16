@@ -40,7 +40,7 @@ export default async function run(): Promise<void> {
 
     let response: Record<string, string>
     try {
-      response = Object.assign(JSON.parse(secrets).secrets, JSON.parse(variables).variables)
+      response = Object.assign(JSON.parse(secrets), JSON.parse(variables))
     } catch (e) {
       throw new Error(`Cannot parse JSON secrets.
 Make sure you add the following to this action:
@@ -61,10 +61,12 @@ with:
       )
     }
 
+    core.debug(`response: ${JSON.stringify(response)}`)
     core.debug(`Using include list: ${includeList?.join(', ')}`)
     core.debug(`Using exclude list: ${excludeList.join(', ')}`)
 
     for (const key of Object.keys(response)) {
+      core.debug(`kkey: ${key}`)
       if (includeList && !includeList.some(inc => key.match(new RegExp(inc)))) {
         continue
       }
