@@ -21,13 +21,12 @@ export default async function run(): Promise<void> {
   ]
 
   try {
-    const {secrets} = core.getInput('secrets', {
+    const secrets = core.getInput('secrets', {
       required: true
     })
-    const {variables} = core.getInput('variables', {
+    const variables = core.getInput('variables', {
       required: true
     })
-    const allVarsJson: string = Object.assign(secrets, variables)
     const keyPrefix: string = core.getInput('prefix')
     const includeListStr: string = core.getInput('include')
     const excludeListStr: string = core.getInput('exclude')
@@ -41,7 +40,7 @@ export default async function run(): Promise<void> {
 
     let response: Record<string, string>
     try {
-      response = JSON.parse(allVarsJson)
+      response = Object.assign(JSON.parse(secrets).secrets, JSON.parse(variables).variables)
     } catch (e) {
       throw new Error(`Cannot parse JSON secrets.
 Make sure you add the following to this action:
@@ -65,7 +64,7 @@ with:
     core.debug(`Using include list: ${includeList?.join(', ')}`)
     core.debug(`Using exclude list: ${excludeList.join(', ')}`)
 
-    for (const key of Object.keys(secrets)) {
+    for (const key of Object.keys(response)) {
       if (includeList && !includeList.some(inc => key.match(new RegExp(inc)))) {
         continue
       }
@@ -103,7 +102,7 @@ with:
         }
       }
 
-      core.exportVariable(newKey, secrets[key])
+      core.exportVariable(newKey, response[key])
       core.info(`Exported secret ${newKey}`)
     }
   } catch (error) {
