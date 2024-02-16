@@ -21,9 +21,13 @@ export default async function run(): Promise<void> {
   ]
 
   try {
-    const secretsJson: string = core.getInput('secrets', {
+    const {secrets} = core.getInput('secrets', {
       required: true
     })
+    const {variables} = core.getInput('variables', {
+      required: true
+    })
+    const allVarsJson: string = Object.assign(secrets, variables)
     const keyPrefix: string = core.getInput('prefix')
     const includeListStr: string = core.getInput('include')
     const excludeListStr: string = core.getInput('exclude')
@@ -35,9 +39,9 @@ export default async function run(): Promise<void> {
     const overrideStr: string = core.getInput('override')
     const override = overrideStr.length ? overrideStr === 'true' : true
 
-    let secrets: Record<string, string>
+    let response: Record<string, string>
     try {
-      secrets = JSON.parse(secretsJson)
+      response = JSON.parse(allVarsJson)
     } catch (e) {
       throw new Error(`Cannot parse JSON secrets.
 Make sure you add the following to this action:
