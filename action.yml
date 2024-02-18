@@ -20,6 +20,9 @@ inputs:
   convert_prefix:
     required: false
     description: 'Include prefix (or not) on conversion. True by default'
+  override:
+    required: false
+    description: 'Either to override or not the variable if it already exists'
 runs:
   using: 'node20'
   main: 'dist/index.js'
