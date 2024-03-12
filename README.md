@@ -75,11 +75,11 @@ Exclude defined secret(s) from list of secrets (comma separated, supports regex)
 
 ```yaml
 steps:
-  - uses: actions/checkout@v3
-  - uses: oNaiPs/secrets-to-env-action@v1
-    with:
-      secrets: ${{ toJSON(secrets) }}
-      exclude: MY_SECRET, MY_OTHER_SECRETS*
+- uses: actions/checkout@v3
+- uses: oNaiPs/secrets-to-env-action@v1
+  with:
+    secrets: ${{ toJSON(secrets) }}
+    exclude: MY_SECRET, MY_OTHER_SECRETS*
 # MY_SECRET is not exported
 ```
 
@@ -134,7 +134,7 @@ Value of MY_SECRET: DONT_OVERRIDE
 
 Converts all exported secrets according to a [template](https://github.com/blakeembrey/change-case#core).
 Available: `lower, upper, camel, constant, pascal, snake`.
-
+  
 ```yaml
 steps:
 - uses: actions/checkout@v3
