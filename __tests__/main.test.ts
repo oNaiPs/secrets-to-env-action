@@ -1,5 +1,7 @@
+import * as cp from 'child_process'
+import * as path from 'path'
+import {expect, jest, test} from '@jest/globals'
 import * as core from '@actions/core'
-import {expect, jest} from '@jest/globals'
 import main from '../src/main'
 
 jest.mock('@actions/core')
