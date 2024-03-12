@@ -29,7 +29,8 @@
     "camel-case": "^4.1.2",
     "constant-case": "^3.0.4",
     "pascal-case": "^3.1.2",
-    "snake-case": "^3.0.4"
+    "snake-case": "^3.0.4",
+    "universal-base64": "^2.1.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.11",
