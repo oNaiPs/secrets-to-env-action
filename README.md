@@ -149,14 +149,14 @@ steps:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v3
-  - uses: oNaiPs/secrets-to-env-action@v1
-    with:
-      secrets: ${{ toJSON(secrets) }}
-      prefix: PREFIX_
-      convert: lower
-      convert_prefix: false
-  - run: env
+- uses: actions/checkout@v3
+- uses: oNaiPs/secrets-to-env-action@v1
+  with:
+    secrets: ${{ toJSON(secrets) }}
+    prefix: PREFIX_
+    convert: lower
+    convert_prefix: false
+- run: env
 # E.g. secret with MY_SECRET would become PREFIX_my_secret
 ```
 
