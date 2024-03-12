@@ -23,6 +23,9 @@ inputs:
   override:
     required: false
     description: 'Either to override or not the variable if it already exists'
+  value_as_base64:
+    required: false
+    description: 'Either to convewrt or not the value to base64'
 runs:
   using: 'node20'
   main: 'dist/index.js'
