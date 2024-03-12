@@ -4,7 +4,6 @@ import {camelCase} from 'camel-case'
 import {constantCase} from 'constant-case'
 import {pascalCase} from 'pascal-case'
 import {snakeCase} from 'snake-case'
-import {encode} from 'universal-base64'
 
 const convertTypes: Record<string, (s: string) => string> = {
   lower: s => s.toLowerCase(),
@@ -104,7 +103,9 @@ with:
         }
       }
 
-      let newValue = valueAsBase64 ? encode(secrets[key]) : secrets[key]
+      let newValue = valueAsBase64
+        ? Buffer.from(secrets[key]).toString('base64')
+        : secrets[key]
 
       core.exportVariable(newKey, newValue)
       core.info(`Exported secret ${newKey}`)
