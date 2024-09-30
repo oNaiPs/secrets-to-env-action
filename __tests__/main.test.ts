@@ -18,6 +18,7 @@ function mockInputs(inputs: {[key: string]: string}) {
 
 describe('secrets-to-env-action', () => {
   let inputSecrets: {[key: string]: string}
+  let inputSecretsBase64: {[key: string]: string}
   let newSecrets: {[key: string]: string}
 
   beforeEach(() => {
@@ -25,6 +26,12 @@ describe('secrets-to-env-action', () => {
       MY_SECRET_1: 'VALUE_1',
       MY_SECRET_2: 'VALUE_2',
       my_low_secret_1: 'low_value_1'
+    }
+
+    inputSecretsBase64 = {
+      MY_SECRET_1: 'VkFMVUVfMQ==',
+      MY_SECRET_2: 'VkFMVUVfMg==',
+      my_low_secret_1: 'bG93X3ZhbHVlXzE='
     }
 
     newSecrets = {}
@@ -242,5 +249,15 @@ describe('secrets-to-env-action', () => {
     delete filteredNewSecrets.MY_SECRET_1
 
     expect(newSecrets).toEqual(filteredNewSecrets)
+  })
+
+  it('converts to base64', () => {
+    mockInputs({
+      secrets: JSON.stringify(inputSecrets),
+      value_as_base64: 'true'
+    })
+    main()
+
+    expect(newSecrets).toEqual(inputSecretsBase64)
   })
 })

@@ -160,6 +160,18 @@ steps:
 # E.g. secret with MY_SECRET would become PREFIX_my_secret
 ```
 
+**Converts all exported secrets to a base64 string (default is false):**
+
+```yaml
+steps:
+- uses: actions/checkout@v3
+- uses: oNaiPs/secrets-to-env-action@v1
+  with:
+    secrets: ${{ toJSON(secrets) }}
+    value_as_base64: true
+- run: echo "Value of my_secret: $my_secret"
+```
+
 ## How it works
 
 This action uses the input in `secrets` to read all the secrets in the JSON format, and exporting all the variables one by one.
