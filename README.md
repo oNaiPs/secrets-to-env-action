@@ -1,10 +1,8 @@
 # secrets-to-env
 
 <p align="center">
-  <a href="https://github.com/oNaiPs/secrets-to-env-action/actions"><img alt="secrets-to-env-action status" src="https://github.com/oNaiPs/secrets-to-env-action/workflows/build-test/badge.svg"></a>
+  <a href="https://github.com/oNaiPs/secrets-to-env-action/actions"><img alt="secrets-to-env-action status" src="https://github.com/oNaiPs/secrets-to-env-action/actions/workflows/build.yml/badge.svg"></a>
 </p>
-
-This action provides the following functionality for GitHub Actions users:
 
 - Read Github secrets and export **all** of them as environment variables
 - Optionally including, excluding and manipulating variables as needed before importing
@@ -111,6 +109,33 @@ steps:
     secrets: ${{ toJSON(secrets) }}
     prefix: PREFIXED_
 - run: echo "Value of PREFIXED_MY_SECRET: $PREFIXED_MY_SECRET"
+```
+
+**Remove a prefix:**
+
+Removes a prefix from secret names before exporting them. This is useful when you have secrets with a common prefix that you want to strip.
+
+```yaml
+steps:
+- uses: actions/checkout@v3
+- uses: oNaiPs/secrets-to-env-action@v1
+  with:
+    secrets: ${{ toJSON(secrets) }}
+    remove_prefix: MY_PREFIXED_
+# Secret MY_PREFIXED_SECRET_1 becomes SECRET_1
+```
+
+You can also combine `remove_prefix` with `prefix` to replace one prefix with another:
+
+```yaml
+steps:
+- uses: actions/checkout@v3
+- uses: oNaiPs/secrets-to-env-action@v1
+  with:
+    secrets: ${{ toJSON(secrets) }}
+    remove_prefix: OLD_PREFIX_
+    prefix: NEW_PREFIX_
+# Secret OLD_PREFIX_SECRET becomes NEW_PREFIX_SECRET
 ```
 
 **Override:**

@@ -253,4 +253,115 @@ describe('secrets-to-env-action', () => {
 
     expect(newSecrets).toEqual(filteredNewSecrets)
   })
+
+  it('removes prefix from secret names', () => {
+    const prefixedSecrets = {
+      MY_PREFIXED_SECRET_1: 'VALUE_1',
+      MY_PREFIXED_SECRET_2: 'VALUE_2',
+      OTHER_SECRET: 'VALUE_3'
+    }
+
+    mockInputs({
+      secrets: JSON.stringify(prefixedSecrets),
+      remove_prefix: 'MY_PREFIXED_'
+    })
+    main()
+
+    expect(newSecrets).toEqual({
+      SECRET_1: 'VALUE_1',
+      SECRET_2: 'VALUE_2',
+      OTHER_SECRET: 'VALUE_3'
+    })
+  })
+
+  it('removes prefix case-insensitively', () => {
+    const prefixedSecrets = {
+      my_prefixed_SECRET_1: 'VALUE_1',
+      MY_PREFIXED_SECRET_2: 'VALUE_2'
+    }
+
+    mockInputs({
+      secrets: JSON.stringify(prefixedSecrets),
+      remove_prefix: 'MY_PREFIXED_'
+    })
+    main()
+
+    expect(newSecrets).toEqual({
+      SECRET_1: 'VALUE_1',
+      SECRET_2: 'VALUE_2'
+    })
+  })
+
+  it('removes prefix and adds new prefix', () => {
+    const prefixedSecrets = {
+      OLD_PREFIX_SECRET_1: 'VALUE_1',
+      OLD_PREFIX_SECRET_2: 'VALUE_2'
+    }
+
+    mockInputs({
+      secrets: JSON.stringify(prefixedSecrets),
+      remove_prefix: 'OLD_PREFIX_',
+      prefix: 'NEW_PREFIX_'
+    })
+    main()
+
+    expect(newSecrets).toEqual({
+      NEW_PREFIX_SECRET_1: 'VALUE_1',
+      NEW_PREFIX_SECRET_2: 'VALUE_2'
+    })
+  })
+
+  it('removes prefix and converts case', () => {
+    const prefixedSecrets = {
+      MY_PREFIXED_SECRET_ONE: 'VALUE_1',
+      MY_PREFIXED_SECRET_TWO: 'VALUE_2'
+    }
+
+    mockInputs({
+      secrets: JSON.stringify(prefixedSecrets),
+      remove_prefix: 'MY_PREFIXED_',
+      convert: 'lower'
+    })
+    main()
+
+    expect(newSecrets).toEqual({
+      secret_one: 'VALUE_1',
+      secret_two: 'VALUE_2'
+    })
+  })
+
+  it('removes prefix, adds new prefix, and converts case', () => {
+    const prefixedSecrets = {
+      OLD_PREFIX_SECRET_ONE: 'VALUE_1',
+      OLD_PREFIX_SECRET_TWO: 'VALUE_2'
+    }
+
+    mockInputs({
+      secrets: JSON.stringify(prefixedSecrets),
+      remove_prefix: 'OLD_PREFIX_',
+      prefix: 'NEW_',
+      convert: 'camel'
+    })
+    main()
+
+    expect(newSecrets).toEqual({
+      newSecretOne: 'VALUE_1',
+      newSecretTwo: 'VALUE_2'
+    })
+  })
+
+  it('keeps original name when prefix not found', () => {
+    const prefixedSecrets = {
+      DIFFERENT_SECRET_1: 'VALUE_1',
+      MY_SECRET_2: 'VALUE_2'
+    }
+
+    mockInputs({
+      secrets: JSON.stringify(prefixedSecrets),
+      remove_prefix: 'MY_PREFIXED_'
+    })
+    main()
+
+    expect(newSecrets).toEqual(prefixedSecrets)
+  })
 })

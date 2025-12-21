@@ -27816,6 +27816,7 @@ function run() {
             required: true
         });
         const keyPrefix = core.getInput('prefix');
+        const removePrefix = core.getInput('remove_prefix');
         const includeListStr = core.getInput('include');
         const excludeListStr = core.getInput('exclude');
         const convert = core.getInput('convert');
@@ -27853,7 +27854,17 @@ with:
             if (excludeList.some(inc => key.match(new RegExp(inc)))) {
                 continue;
             }
-            let newKey = keyPrefix.length ? `${keyPrefix}${key}` : key;
+            let newKey = key;
+            // Remove prefix if specified
+            if (removePrefix.length) {
+                const prefixRegex = new RegExp(`^${removePrefix}`, 'i');
+                if (newKey.match(prefixRegex)) {
+                    newKey = newKey.replace(prefixRegex, '');
+                    core.debug(`Removed prefix "${removePrefix}" from ${key} -> ${newKey}`);
+                }
+            }
+            // Add prefix if specified
+            newKey = keyPrefix.length ? `${keyPrefix}${newKey}` : newKey;
             if (convert.length) {
                 if (!convertTypes[convert]) {
                     throw new Error(`Unknown convert value "${convert}". Available: ${Object.keys(convertTypes).join(', ')}`);
