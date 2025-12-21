@@ -57,6 +57,31 @@ Add the following action to your workflow:
 After running this action, subsequent actions will be able to access the secrets as env variables.
 Note the `secrets` key. It is **mandatory** so the action can read and export the secrets.
 
+### Inputs
+
+| Input | Required | Default | Description |
+| --- | --- | --- | --- |
+| `secrets` | ✅ | — | JSON representation of secrets, e.g. `${{ toJSON(secrets) }}`. Required even when exporting only vars. |
+| `vars` | — | — | JSON representation of repository/environment variables, e.g. `${{ toJSON(vars) }}`. |
+| `on_collision` | — | `prefer-secrets` | Collision strategy when secrets and vars resolve to the same name: `prefer-secrets`, `prefer-vars`, `warn`, `error`. |
+| `prefix` | — | — | Prefix to add to exported names. |
+| `remove_prefix` | — | — | Prefix to strip from names before exporting. |
+| `include` | — | — | Comma-separated list of names/regex patterns to include. |
+| `exclude` | — | — | Comma-separated list of names/regex patterns to exclude. |
+| `convert` | — | — | Case conversion template: `lower`, `upper`, `camel`, `constant`, `pascal`, `snake`. |
+| `convert_prefix` | — | `true` | Include the prefix when converting case. |
+| `override` | — | `true` | Override an existing env var with the same name. |
+
+### Version pinning
+
+For reproducible workflows, consider pinning to a commit SHA:
+
+```yaml
+- uses: oNaiPs/secrets-to-env-action@<sha>
+  with:
+    secrets: ${{ toJSON(secrets) }}
+```
+
 **Basic:**
 
 ```yaml
@@ -89,7 +114,7 @@ steps:
 - uses: actions/checkout@v3
 - uses: oNaiPs/secrets-to-env-action@v1
   with:
-    secrets: "{}"
+    secrets: "{}" # Required placeholder when only exporting vars
     vars: ${{ toJSON(vars) }}
 - run: echo "Value of MY_VARIABLE: $MY_VARIABLE"
 ```
@@ -139,9 +164,9 @@ steps:
     on_collision: warn  # Logs warnings for collisions, uses secret value
 ```
 
-**Include or exclude secrets:**
+**Include or exclude secrets and vars:**
 
-Exclude defined secret(s) from list of secrets (comma separated, supports regex).
+Exclude defined secret(s) or var(s) from list of inputs (comma separated, supports regex).
 
 ```yaml
 steps:
@@ -153,7 +178,7 @@ steps:
 # MY_SECRET is not exported
 ```
 
-**Only** include secret(s) from list of secrets (comma separated, supports regex).
+**Only** include secret(s) or var(s) from list (comma separated, supports regex).
 
 ```yaml
 steps:
@@ -260,6 +285,11 @@ steps:
 ## How it works
 
 This action uses the inputs in `secrets` and `vars` to read all the secrets and variables in JSON format, then exports them as environment variables one by one. Both secrets and vars go through the same processing pipeline (filtering, prefix manipulation, case conversion) before being exported.
+
+### Notes & tips
+
+- The `include`/`exclude` filters match the original secret/var names before prefix and case conversion.
+- Use `on_collision: error` in security-sensitive workflows to fail fast when names collide.
 
 ## License
 
