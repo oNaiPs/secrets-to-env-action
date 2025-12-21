@@ -35,6 +35,10 @@ export default function run(): void {
       : true
     const overrideStr: string = core.getInput('override')
     const override = overrideStr.length ? overrideStr === 'true' : true
+    const valueAsBase64Str: string = core.getInput('value_as_base64')
+    const valueAsBase64 = valueAsBase64Str.length
+      ? valueAsBase64Str === 'true'
+      : false
 
     let secrets: Record<string, string>
     try {
@@ -100,7 +104,11 @@ with:
         }
       }
 
-      core.exportVariable(newKey, secrets[key])
+      let newValue = valueAsBase64
+        ? Buffer.from(secrets[key]).toString('base64')
+        : secrets[key]
+
+      core.exportVariable(newKey, newValue)
       core.info(`Exported secret ${newKey}`)
     }
   } catch (error: unknown) {

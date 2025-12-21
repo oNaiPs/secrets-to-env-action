@@ -1,6 +1,6 @@
-name: 'Export all secrets to env variables'
-description: 'Utility action that exports all github secrets to environment variables'
-author: 'Jose Pereira @oNaiPs'
+name: 'Export all variables from other contexts to env variables'
+description: 'Utility action that exports all github secrets and vars to environment variables'
+author: 'Danilo Körber'
 inputs:
   secrets:
     required: true
@@ -23,6 +23,9 @@ inputs:
   override:
     required: false
     description: 'Either to override or not the variable if it already exists'
+  value_as_base64:
+    required: false
+    description: 'Either to convewrt or not the value to base64'
 runs:
   using: 'node20'
   main: 'dist/index.js'
