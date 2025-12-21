@@ -364,4 +364,418 @@ describe('secrets-to-env-action', () => {
 
     expect(newSecrets).toEqual(prefixedSecrets)
   })
+
+  // Vars-only scenarios
+  describe('vars support', () => {
+    it('exports vars only when secrets is empty', () => {
+      const inputVars = {
+        VAR_1: 'VAR_VALUE_1',
+        VAR_2: 'VAR_VALUE_2'
+      }
+
+      mockInputs({
+        secrets: JSON.stringify({}),
+        vars: JSON.stringify(inputVars)
+      })
+      main()
+
+      expect(newSecrets).toEqual(inputVars)
+    })
+
+    it('applies filters to vars', () => {
+      const inputVars = {
+        INCLUDE_VAR_1: 'VALUE_1',
+        INCLUDE_VAR_2: 'VALUE_2',
+        EXCLUDE_VAR: 'VALUE_3'
+      }
+
+      mockInputs({
+        secrets: JSON.stringify({}),
+        vars: JSON.stringify(inputVars),
+        include: 'INCLUDE_*'
+      })
+      main()
+
+      expect(newSecrets).toEqual({
+        INCLUDE_VAR_1: 'VALUE_1',
+        INCLUDE_VAR_2: 'VALUE_2'
+      })
+    })
+
+    it('applies prefix and conversion to vars', () => {
+      const inputVars = {
+        MY_VAR: 'VALUE_1'
+      }
+
+      mockInputs({
+        secrets: JSON.stringify({}),
+        vars: JSON.stringify(inputVars),
+        prefix: 'TEST_',
+        convert: 'lower'
+      })
+      main()
+
+      expect(newSecrets).toEqual({
+        test_my_var: 'VALUE_1'
+      })
+    })
+  })
+
+  // Secrets and vars together without collision
+  describe('secrets and vars together', () => {
+    it('exports both when no overlap', () => {
+      const secrets = {SECRET_1: 'SECRET_VALUE_1'}
+      const vars = {VAR_1: 'VAR_VALUE_1'}
+
+      mockInputs({
+        secrets: JSON.stringify(secrets),
+        vars: JSON.stringify(vars)
+      })
+      main()
+
+      expect(newSecrets).toEqual({
+        SECRET_1: 'SECRET_VALUE_1',
+        VAR_1: 'VAR_VALUE_1'
+      })
+    })
+
+    it('applies different filters to demonstrate independence', () => {
+      const secrets = {
+        INCLUDE_SECRET: 'SECRET_1',
+        EXCLUDE_SECRET: 'SECRET_2'
+      }
+      const vars = {INCLUDE_VAR: 'VAR_1', EXCLUDE_VAR: 'VAR_2'}
+
+      mockInputs({
+        secrets: JSON.stringify(secrets),
+        vars: JSON.stringify(vars),
+        include: 'INCLUDE_*'
+      })
+      main()
+
+      expect(newSecrets).toEqual({
+        INCLUDE_SECRET: 'SECRET_1',
+        INCLUDE_VAR: 'VAR_1'
+      })
+    })
+
+    it('different prefixes result in no collision', () => {
+      const secrets = {KEY: 'SECRET_VALUE'}
+      const vars = {KEY: 'VAR_VALUE'}
+
+      mockInputs({
+        secrets: JSON.stringify(secrets),
+        vars: JSON.stringify(vars),
+        prefix: 'MY_'
+      })
+      main()
+
+      // Both export but with different original names, same final name
+      // Default strategy is prefer-secrets
+      expect(newSecrets).toEqual({
+        MY_KEY: 'SECRET_VALUE'
+      })
+    })
+
+    it('case conversion with different results', () => {
+      const secrets = {secret_key: 'SECRET_VALUE'}
+      const vars = {VAR_KEY: 'VAR_VALUE'}
+
+      mockInputs({
+        secrets: JSON.stringify(secrets),
+        vars: JSON.stringify(vars),
+        convert: 'upper'
+      })
+      main()
+
+      expect(newSecrets).toEqual({
+        SECRET_KEY: 'SECRET_VALUE',
+        VAR_KEY: 'VAR_VALUE'
+      })
+    })
+  })
+
+  // Collision scenarios
+  describe('collision handling', () => {
+    it('prefer-secrets: secret overwrites var', () => {
+      const secrets = {MY_KEY: 'SECRET_VALUE'}
+      const vars = {MY_KEY: 'VAR_VALUE'}
+
+      mockInputs({
+        secrets: JSON.stringify(secrets),
+        vars: JSON.stringify(vars),
+        on_collision: 'prefer-secrets'
+      })
+      main()
+
+      expect(newSecrets).toEqual({MY_KEY: 'SECRET_VALUE'})
+    })
+
+    it('prefer-secrets is default', () => {
+      const secrets = {MY_KEY: 'SECRET_VALUE'}
+      const vars = {MY_KEY: 'VAR_VALUE'}
+
+      mockInputs({
+        secrets: JSON.stringify(secrets),
+        vars: JSON.stringify(vars)
+      })
+      main()
+
+      expect(newSecrets).toEqual({MY_KEY: 'SECRET_VALUE'})
+    })
+
+    it('prefer-vars: var overwrites secret', () => {
+      const secrets = {MY_KEY: 'SECRET_VALUE'}
+      const vars = {MY_KEY: 'VAR_VALUE'}
+
+      mockInputs({
+        secrets: JSON.stringify(secrets),
+        vars: JSON.stringify(vars),
+        on_collision: 'prefer-vars'
+      })
+      main()
+
+      expect(newSecrets).toEqual({MY_KEY: 'VAR_VALUE'})
+    })
+
+    it('error: collision throws error', () => {
+      const secrets = {MY_KEY: 'SECRET_VALUE'}
+      const vars = {MY_KEY: 'VAR_VALUE'}
+
+      mockInputs({
+        secrets: JSON.stringify(secrets),
+        vars: JSON.stringify(vars),
+        on_collision: 'error'
+      })
+
+      main()
+      expect(mockCore.setFailed).toHaveBeenCalledWith(
+        expect.stringContaining('Collision detected')
+      )
+    })
+
+    it('error: no collision does not throw', () => {
+      const secrets = {SECRET_KEY: 'SECRET_VALUE'}
+      const vars = {VAR_KEY: 'VAR_VALUE'}
+
+      mockInputs({
+        secrets: JSON.stringify(secrets),
+        vars: JSON.stringify(vars),
+        on_collision: 'error'
+      })
+      main()
+
+      expect(newSecrets).toEqual({
+        SECRET_KEY: 'SECRET_VALUE',
+        VAR_KEY: 'VAR_VALUE'
+      })
+    })
+
+    it('warn: collision logs warning and exports correct value', () => {
+      const secrets = {MY_KEY: 'SECRET_VALUE'}
+      const vars = {MY_KEY: 'VAR_VALUE'}
+
+      mockInputs({
+        secrets: JSON.stringify(secrets),
+        vars: JSON.stringify(vars),
+        on_collision: 'warn'
+      })
+      main()
+
+      expect(mockCore.warning).toHaveBeenCalledWith(
+        expect.stringContaining('Collision detected')
+      )
+      expect(newSecrets).toEqual({MY_KEY: 'SECRET_VALUE'})
+    })
+
+    it('warn: tracks correct original names in warning', () => {
+      const secrets = {SAME_KEY: 'SECRET_VALUE'}
+      const vars = {SAME_KEY: 'VAR_VALUE'}
+
+      mockInputs({
+        secrets: JSON.stringify(secrets),
+        vars: JSON.stringify(vars),
+        on_collision: 'warn'
+      })
+      main()
+
+      const warningCall = mockCore.warning.mock.calls[0][0] as string
+      expect(warningCall).toContain('SAME_KEY')
+      expect(warningCall).toContain('From secret: SAME_KEY')
+      expect(warningCall).toContain('From var: SAME_KEY')
+    })
+
+    it('multiple collisions in error mode shows all conflicts', () => {
+      const secrets = {KEY_1: 'SECRET_1', KEY_2: 'SECRET_2'}
+      const vars = {KEY_1: 'VAR_1', KEY_2: 'VAR_2'}
+
+      mockInputs({
+        secrets: JSON.stringify(secrets),
+        vars: JSON.stringify(vars),
+        on_collision: 'error'
+      })
+      main()
+
+      expect(mockCore.setFailed).toHaveBeenCalledWith(
+        expect.stringMatching(/KEY_1[\s\S]*KEY_2/)
+      )
+    })
+  })
+
+  // Collision after processing
+  describe('collision after transformations', () => {
+    it('different original names, same after prefix removal', () => {
+      const secrets = {PREFIX_MY_KEY: 'SECRET_VALUE'}
+      const vars = {PREFIX_MY_KEY: 'VAR_VALUE'}
+
+      mockInputs({
+        secrets: JSON.stringify(secrets),
+        vars: JSON.stringify(vars),
+        remove_prefix: 'PREFIX_',
+        on_collision: 'prefer-vars'
+      })
+      main()
+
+      expect(newSecrets).toEqual({MY_KEY: 'VAR_VALUE'})
+    })
+
+    it('different original names, same after case conversion', () => {
+      const secrets = {my_key: 'SECRET_VALUE'}
+      const vars = {MY_KEY: 'VAR_VALUE'}
+
+      mockInputs({
+        secrets: JSON.stringify(secrets),
+        vars: JSON.stringify(vars),
+        convert: 'upper',
+        on_collision: 'prefer-secrets'
+      })
+      main()
+
+      expect(newSecrets).toEqual({MY_KEY: 'SECRET_VALUE'})
+    })
+
+    it('different original names, same after prefix addition', () => {
+      const secrets = {KEY: 'SECRET_VALUE'}
+      const vars = {KEY: 'VAR_VALUE'}
+
+      mockInputs({
+        secrets: JSON.stringify(secrets),
+        vars: JSON.stringify(vars),
+        prefix: 'TEST_',
+        on_collision: 'prefer-vars'
+      })
+      main()
+
+      expect(newSecrets).toEqual({TEST_KEY: 'VAR_VALUE'})
+    })
+
+    it('complex: same after remove_prefix + add_prefix + convert', () => {
+      const secrets = {OLD_my_secret: 'SECRET_VALUE'}
+      const vars = {OLD_MY_SECRET: 'VAR_VALUE'}
+
+      mockInputs({
+        secrets: JSON.stringify(secrets),
+        vars: JSON.stringify(vars),
+        remove_prefix: 'OLD_',
+        prefix: 'NEW_',
+        convert: 'lower',
+        on_collision: 'prefer-secrets'
+      })
+      main()
+
+      expect(newSecrets).toEqual({new_my_secret: 'SECRET_VALUE'})
+    })
+  })
+
+  // Edge cases
+  describe('edge cases', () => {
+    it('empty vars with secrets works normally', () => {
+      mockInputs({
+        secrets: JSON.stringify(inputSecrets),
+        vars: JSON.stringify({})
+      })
+      main()
+
+      expect(newSecrets).toEqual(inputSecrets)
+    })
+
+    it('empty secrets with vars exports only vars', () => {
+      const vars = {VAR_1: 'VALUE_1'}
+
+      mockInputs({
+        secrets: JSON.stringify({}),
+        vars: JSON.stringify(vars)
+      })
+      main()
+
+      expect(newSecrets).toEqual(vars)
+    })
+
+    it('both empty results in no exports', () => {
+      mockInputs({
+        secrets: JSON.stringify({}),
+        vars: JSON.stringify({})
+      })
+      main()
+
+      expect(newSecrets).toEqual({})
+    })
+
+    it('invalid on_collision value throws error', () => {
+      mockInputs({
+        secrets: JSON.stringify(inputSecrets),
+        vars: JSON.stringify({}),
+        on_collision: 'invalid-strategy'
+      })
+      main()
+
+      expect(mockCore.setFailed).toHaveBeenCalledWith(
+        expect.stringContaining('Invalid on_collision value')
+      )
+    })
+  })
+
+  // Integration with existing features
+  describe('vars integration with existing features', () => {
+    it('vars respect override setting', () => {
+      const vars = {EXISTING_VAR: 'NEW_VALUE'}
+      process.env.EXISTING_VAR = 'OLD_VALUE'
+
+      mockInputs({
+        secrets: JSON.stringify({}),
+        vars: JSON.stringify(vars),
+        override: 'false'
+      })
+      main()
+
+      expect(newSecrets).toEqual({})
+      delete process.env.EXISTING_VAR
+    })
+
+    it('vars respect exclude patterns', () => {
+      const vars = {EXCLUDE_VAR: 'VALUE_1', INCLUDE_VAR: 'VALUE_2'}
+
+      mockInputs({
+        secrets: JSON.stringify({}),
+        vars: JSON.stringify(vars),
+        exclude: 'EXCLUDE_*'
+      })
+      main()
+
+      expect(newSecrets).toEqual({INCLUDE_VAR: 'VALUE_2'})
+    })
+
+    it('vars respect include patterns', () => {
+      const vars = {INCLUDE_VAR: 'VALUE_1', OTHER_VAR: 'VALUE_2'}
+
+      mockInputs({
+        secrets: JSON.stringify({}),
+        vars: JSON.stringify(vars),
+        include: 'INCLUDE_*'
+      })
+      main()
+
+      expect(newSecrets).toEqual({INCLUDE_VAR: 'VALUE_1'})
+    })
+  })
 })
