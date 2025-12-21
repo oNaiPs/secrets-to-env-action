@@ -8,6 +8,9 @@ inputs:
   prefix:
     required: false
     description: 'Prefix to add to all secrets, e.g.: SECRET_'
+  remove_prefix:
+    required: false
+    description: 'Prefix to remove from secret names before exporting, e.g.: MY_PREFIXED_'
   include:
     required: false
     description: 'Comma-separated list of secrets to export'

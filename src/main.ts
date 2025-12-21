@@ -26,6 +26,7 @@ export default function run(): void {
       required: true
     })
     const keyPrefix: string = core.getInput('prefix')
+    const removePrefix: string = core.getInput('remove_prefix')
     const includeListStr: string = core.getInput('include')
     const excludeListStr: string = core.getInput('exclude')
     const convert: string = core.getInput('convert')
@@ -71,7 +72,21 @@ with:
         continue
       }
 
-      let newKey = keyPrefix.length ? `${keyPrefix}${key}` : key
+      let newKey = key
+
+      // Remove prefix if specified
+      if (removePrefix.length) {
+        const prefixRegex = new RegExp(`^${removePrefix}`, 'i')
+        if (newKey.match(prefixRegex)) {
+          newKey = newKey.replace(prefixRegex, '')
+          core.debug(
+            `Removed prefix "${removePrefix}" from ${key} -> ${newKey}`
+          )
+        }
+      }
+
+      // Add prefix if specified
+      newKey = keyPrefix.length ? `${keyPrefix}${newKey}` : newKey
 
       if (convert.length) {
         if (!convertTypes[convert]) {
