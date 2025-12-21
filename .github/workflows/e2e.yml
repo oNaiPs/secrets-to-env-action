@@ -111,13 +111,13 @@ jobs:
         uses: ./
         with:
           secrets: ${{ toJSON(secrets) }}
-          remove_prefix: SECRET_
+          remove_prefix: PREFIX_
       - name: Verify secrets to env variables (remove prefix)
         run: |
-          [[ "${1}" != "VALUE_1" ]] && echo "Could not export 1 secret (removed prefix), value is ${1}" && exit 1
-          [[ "${2}" != "VALUE_2" ]] && echo "Could not export 2 secret (removed prefix), value is ${2}" && exit 1
-          [[ "${3}" != "VALUE_3" ]] && echo "Could not export 3 secret (removed prefix), value is ${3}" && exit 1
-          [[ "${SECRET_1}" != "" ]] && echo "SECRET_1 should be unset after prefix removal, got ${SECRET_1}" && exit 1
+          [[ "${VAR1}" != "VALUE_1" ]] && echo "Could not export VAR1 secret (removed prefix), value is ${VAR1}" && exit 1
+          [[ "${VAR2}" != "VALUE_2" ]] && echo "Could not export VAR2 secret (removed prefix), value is ${VAR2}" && exit 1
+          [[ "${VAR3}" != "VALUE_3" ]] && echo "Could not export VAR3 secret (removed prefix), value is ${VAR3}" && exit 1
+          [[ "${PREFIX_VAR1}" != "" ]] && echo "PREFIX_VAR1 should be unset after prefix removal, got ${PREFIX_VAR1}" && exit 1
           true
         shell: bash
 
@@ -129,14 +129,14 @@ jobs:
         uses: ./
         with:
           secrets: ${{ toJSON(secrets) }}
-          remove_prefix: SECRET_
+          remove_prefix: PREFIX_
           prefix: MY_SECRET_
       - name: Verify secrets to env variables (remove prefix, add prefix)
         run: |
-          [[ "${MY_SECRET_1}" != "VALUE_1" ]] && echo "Could not export MY_SECRET_1, value is ${MY_SECRET_1}" && exit 1
-          [[ "${MY_SECRET_2}" != "VALUE_2" ]] && echo "Could not export MY_SECRET_2, value is ${MY_SECRET_2}" && exit 1
-          [[ "${MY_SECRET_3}" != "VALUE_3" ]] && echo "Could not export MY_SECRET_3, value is ${MY_SECRET_3}" && exit 1
-          [[ "${SECRET_1}" != "" ]] && echo "SECRET_1 should be unset, got ${SECRET_1}" && exit 1
+          [[ "${MY_SECRET_VAR1}" != "VALUE_1" ]] && echo "Could not export MY_SECRET_VAR1, value is ${MY_SECRET_VAR1}" && exit 1
+          [[ "${MY_SECRET_VAR2}" != "VALUE_2" ]] && echo "Could not export MY_SECRET_VAR2, value is ${MY_SECRET_VAR2}" && exit 1
+          [[ "${MY_SECRET_VAR3}" != "VALUE_3" ]] && echo "Could not export MY_SECRET_VAR3, value is ${MY_SECRET_VAR3}" && exit 1
+          [[ "${PREFIX_VAR1}" != "" ]] && echo "PREFIX_VAR1 should be unset, got ${PREFIX_VAR1}" && exit 1
           true
         shell: bash
 
@@ -148,13 +148,13 @@ jobs:
         uses: ./
         with:
           secrets: ${{ toJSON(secrets) }}
-          remove_prefix: SECRET_
+          remove_prefix: PREFIX_
           convert: lower
       - name: Verify secrets to env variables (remove prefix, convert)
         run: |
-          [[ "${1}" != "VALUE_1" ]] && echo "Could not export 1 (lowercase after prefix removal), value is ${1}" && exit 1
-          [[ "${2}" != "VALUE_2" ]] && echo "Could not export 2 (lowercase after prefix removal), value is ${2}" && exit 1
-          [[ "${3}" != "VALUE_3" ]] && echo "Could not export 3 (lowercase after prefix removal), value is ${3}" && exit 1
+          [[ "${var1}" != "VALUE_1" ]] && echo "Could not export var1 (lowercase after prefix removal), value is ${var1}" && exit 1
+          [[ "${var2}" != "VALUE_2" ]] && echo "Could not export var2 (lowercase after prefix removal), value is ${var2}" && exit 1
+          [[ "${var3}" != "VALUE_3" ]] && echo "Could not export var3 (lowercase after prefix removal), value is ${var3}" && exit 1
           true
         shell: bash
 
