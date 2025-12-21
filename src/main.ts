@@ -1,4 +1,5 @@
 import * as core from '@actions/core'
+import {fileURLToPath} from 'url'
 
 import {camelCase} from 'camel-case'
 import {constantCase} from 'constant-case'
@@ -14,7 +15,7 @@ const convertTypes: Record<string, (s: string) => string> = {
   snake: snakeCase
 }
 
-export default async function run(): Promise<void> {
+export default function run(): void {
   let excludeList = [
     // this variable is already exported automatically
     'github_token'
@@ -37,8 +38,8 @@ export default async function run(): Promise<void> {
 
     let secrets: Record<string, string>
     try {
-      secrets = JSON.parse(secretsJson)
-    } catch (e) {
+      secrets = JSON.parse(secretsJson) as Record<string, string>
+    } catch {
       throw new Error(`Cannot parse JSON secrets.
 Make sure you add the following to this action:
 
@@ -102,11 +103,19 @@ with:
       core.exportVariable(newKey, secrets[key])
       core.info(`Exported secret ${newKey}`)
     }
-  } catch (error) {
-    if (error instanceof Error) core.setFailed(error.message)
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      core.setFailed(error.message)
+    } else {
+      core.setFailed('An unknown error occurred')
+    }
   }
 }
 
-if (require.main === module) {
-  run()
+// ESM equivalent of require.main === module
+if (
+  import.meta.url === `file://${process.argv[1]}` ||
+  process.argv[1] === fileURLToPath(import.meta.url)
+) {
+  void run()
 }

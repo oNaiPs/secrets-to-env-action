@@ -1,19 +1,29 @@
-import * as cp from 'child_process'
-import * as path from 'path'
-import {expect, jest, test} from '@jest/globals'
-import * as core from '@actions/core'
-import main from '../src/main'
+import {
+  expect,
+  jest,
+  test,
+  beforeAll,
+  beforeEach,
+  afterAll,
+  describe,
+  it
+} from '@jest/globals'
 
-jest.mock('@actions/core')
+const mockCore = {
+  debug: jest.fn((s: string) => console.log(`DEBUG: ${s}`)),
+  info: jest.fn((s: string) => console.log(`INFO: ${s}`)),
+  warning: jest.fn((s: string | Error) => console.log(`WARNING: ${s}`)),
+  getInput: jest.fn(),
+  exportVariable: jest.fn(),
+  setFailed: jest.fn()
+}
 
-let mockedCore: jest.Mocked<typeof core>
+jest.unstable_mockModule('@actions/core', () => mockCore)
 
-jest.mocked(core.debug).mockImplementation(s => console.log(`DEBUG: ${s}`))
-jest.mocked(core.info).mockImplementation(s => console.log(`INFO: ${s}`))
-jest.mocked(core.warning).mockImplementation(s => console.log(`WARNING: ${s}`))
+const main = (await import('../src/main.js')).default
 
-function mockInputs(inputs: {[key: string]: string}) {
-  jest.mocked(core.getInput).mockImplementation(s => inputs[s] || '')
+function mockInputs(inputs: {[key: string]: string}): void {
+  mockCore.getInput.mockImplementation(((s: string) => inputs[s] || '') as any)
 }
 
 describe('secrets-to-env-action', () => {
@@ -28,9 +38,9 @@ describe('secrets-to-env-action', () => {
     }
 
     newSecrets = {}
-    jest
-      .mocked(core.exportVariable)
-      .mockImplementation((k, v) => (newSecrets[k] = v))
+    mockCore.exportVariable.mockImplementation(((k: string, v: string) => {
+      newSecrets[k] = v
+    }) as any)
   })
 
   it('exports all variables', () => {
