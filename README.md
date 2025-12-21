@@ -4,8 +4,9 @@
   <a href="https://github.com/oNaiPs/secrets-to-env-action/actions"><img alt="secrets-to-env-action status" src="https://github.com/oNaiPs/secrets-to-env-action/actions/workflows/build.yml/badge.svg"></a>
 </p>
 
-- Read Github secrets and export **all** of them as environment variables
+- Read Github secrets **and variables** and export **all** of them as environment variables
 - Optionally including, excluding and manipulating variables as needed before importing
+- Configurable collision handling when secrets and vars have the same name
 
 <table>
 <tr>
@@ -65,6 +66,77 @@ steps:
   with:
     secrets: ${{ toJSON(secrets) }}
 - run: echo "Value of MY_SECRET: $MY_SECRET"
+```
+
+**Export Variables:**
+
+In addition to secrets, you can also export GitHub repository/environment variables. Variables work exactly like secrets and support all the same features (filtering, prefix manipulation, case conversion, etc.).
+
+```yaml
+steps:
+- uses: actions/checkout@v3
+- uses: oNaiPs/secrets-to-env-action@v1
+  with:
+    secrets: ${{ toJSON(secrets) }}
+    vars: ${{ toJSON(vars) }}
+- run: echo "Value of MY_VARIABLE: $MY_VARIABLE"
+```
+
+Export **only** variables (no secrets):
+
+```yaml
+steps:
+- uses: actions/checkout@v3
+- uses: oNaiPs/secrets-to-env-action@v1
+  with:
+    secrets: "{}"
+    vars: ${{ toJSON(vars) }}
+- run: echo "Value of MY_VARIABLE: $MY_VARIABLE"
+```
+
+**Collision Handling:**
+
+When both secrets and vars have the same name (after applying filters, prefixes, and conversions), you can control which value takes precedence using the `on_collision` parameter.
+
+Available strategies:
+- `prefer-secrets` (default): Secrets override vars with the same name
+- `prefer-vars`: Vars override secrets with the same name
+- `error`: Fail the action if any collision is detected
+- `warn`: Log a warning and use the secret value (same as prefer-secrets but with warnings)
+
+```yaml
+steps:
+- uses: actions/checkout@v3
+- uses: oNaiPs/secrets-to-env-action@v1
+  with:
+    secrets: ${{ toJSON(secrets) }}
+    vars: ${{ toJSON(vars) }}
+    on_collision: prefer-secrets  # Default behavior
+- run: echo "Value: $MY_KEY"  # Uses secret if both secret and var named MY_KEY exist
+```
+
+Use `error` mode for strict validation:
+
+```yaml
+steps:
+- uses: actions/checkout@v3
+- uses: oNaiPs/secrets-to-env-action@v1
+  with:
+    secrets: ${{ toJSON(secrets) }}
+    vars: ${{ toJSON(vars) }}
+    on_collision: error  # Fails if any collision detected
+```
+
+Use `warn` mode to be notified of collisions:
+
+```yaml
+steps:
+- uses: actions/checkout@v3
+- uses: oNaiPs/secrets-to-env-action@v1
+  with:
+    secrets: ${{ toJSON(secrets) }}
+    vars: ${{ toJSON(vars) }}
+    on_collision: warn  # Logs warnings for collisions, uses secret value
 ```
 
 **Include or exclude secrets:**
@@ -187,7 +259,7 @@ steps:
 
 ## How it works
 
-This action uses the input in `secrets` to read all the secrets in the JSON format, and exporting all the variables one by one.
+This action uses the inputs in `secrets` and `vars` to read all the secrets and variables in JSON format, then exports them as environment variables one by one. Both secrets and vars go through the same processing pipeline (filtering, prefix manipulation, case conversion) before being exported.
 
 ## License
 

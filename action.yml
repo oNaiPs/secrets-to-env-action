@@ -5,6 +5,12 @@ inputs:
   secrets:
     required: true
     description: JSON representation of the secrets, use provided placeholder'
+  vars:
+    required: false
+    description: 'JSON representation of repository/environment variables, , use provided placeholder'
+  on_collision:
+    required: false
+    description: 'How to handle name collisions between secrets and vars. Options: prefer-secrets (default), prefer-vars, error, warn'
   prefix:
     required: false
     description: 'Prefix to add to all secrets, e.g.: SECRET_'

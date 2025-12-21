@@ -174,3 +174,124 @@ jobs:
           convert: bad
           secrets: ${{ toJSON(secrets) }}
         continue-on-error: true
+
+  # Vars support tests
+  test-vars-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export vars only (empty secrets)
+        uses: ./
+        with:
+          secrets: "{}"
+          vars: ${{ toJSON(vars) }}
+      - name: Verify vars exported
+        run: |
+          [[ "${VAR_1}" != "VAR_VALUE_1" ]] && echo "Could not export VAR_1, value is ${VAR_1}" && exit 1
+          [[ "${VAR_2}" != "VAR_VALUE_2" ]] && echo "Could not export VAR_2, value is ${VAR_2}" && exit 1
+          [[ "${VAR_3}" != "VAR_VALUE_3" ]] && echo "Could not export VAR_3, value is ${VAR_3}" && exit 1
+          true
+        shell: bash
+
+  test-secrets-and-vars-no-collision:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export both secrets and vars
+        uses: ./
+        with:
+          secrets: ${{ toJSON(secrets) }}
+          vars: ${{ toJSON(vars) }}
+          prefix: TEST_
+      - name: Verify both exported with prefix
+        run: |
+          [[ "${TEST_SECRET_1}" != "VALUE_1" ]] && echo "Could not export TEST_SECRET_1, value is ${TEST_SECRET_1}" && exit 1
+          [[ "${TEST_VAR_1}" != "VAR_VALUE_1" ]] && echo "Could not export TEST_VAR_1, value is ${TEST_VAR_1}" && exit 1
+          true
+        shell: bash
+
+  test-collision-prefer-secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export with collision (prefer-secrets)
+        uses: ./
+        with:
+          secrets: ${{ toJSON(secrets) }}
+          vars: ${{ toJSON(vars) }}
+          on_collision: prefer-secrets
+      - name: Verify secret value used
+        run: |
+          [[ "${COLLISION_KEY}" != "SECRET_COLLISION_VALUE" ]] && echo "Expected secret value, got ${COLLISION_KEY}" && exit 1
+          true
+        shell: bash
+
+  test-collision-prefer-vars:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export with collision (prefer-vars)
+        uses: ./
+        with:
+          secrets: ${{ toJSON(secrets) }}
+          vars: ${{ toJSON(vars) }}
+          on_collision: prefer-vars
+      - name: Verify var value used
+        run: |
+          [[ "${COLLISION_KEY}" != "VAR_COLLISION_VALUE" ]] && echo "Expected var value, got ${COLLISION_KEY}" && exit 1
+          true
+        shell: bash
+
+  test-collision-error:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export with collision (error mode)
+        uses: ./
+        with:
+          secrets: ${{ toJSON(secrets) }}
+          vars: ${{ toJSON(vars) }}
+          on_collision: error
+        continue-on-error: true
+        id: collision-error
+      - name: Verify action failed
+        run: |
+          [[ "${{ steps.collision-error.outcome }}" != "failure" ]] && echo "Action should have failed on collision" && exit 1
+          true
+        shell: bash
+
+  test-collision-warn:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export with collision (warn mode)
+        uses: ./
+        with:
+          secrets: ${{ toJSON(secrets) }}
+          vars: ${{ toJSON(vars) }}
+          on_collision: warn
+      - name: Verify warning was logged and secret value used
+        run: |
+          [[ "${COLLISION_KEY}" != "SECRET_COLLISION_VALUE" ]] && echo "Expected secret value with warn mode, got ${COLLISION_KEY}" && exit 1
+          true
+        shell: bash
+
+  test-vars-with-filters:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export vars with filters
+        uses: ./
+        with:
+          secrets: "{}"
+          vars: ${{ toJSON(vars) }}
+          include: VAR_1
+          prefix: MY_
+          convert: lower
+      - name: Verify filtered vars exported
+        run: |
+          [[ "${my_var_1}" != "VAR_VALUE_1" ]] && echo "Could not export my_var_1, value is ${my_var_1}" && exit 1
+          [[ "${my_var_2}" != "" ]] && echo "my_var_2 should not be exported, got ${my_var_2}" && exit 1
+          [[ "${my_var_3}" != "" ]] && echo "my_var_3 should not be exported, got ${my_var_3}" && exit 1
+          true
+        shell: bash
