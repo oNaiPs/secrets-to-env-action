@@ -13,7 +13,7 @@ jobs:
   test-exclude:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Export secrets to env variables (with exclude)
         uses: ./
         with:
@@ -32,7 +32,7 @@ jobs:
   test-include-prefix:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Export secrets to env variables (with prefix, include)
         uses: ./
         with:
@@ -55,7 +55,7 @@ jobs:
     env:
       SECRET_1: DONT_OVERRIDE
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Export secrets to env variables (override)
         uses: ./
         with:
@@ -70,7 +70,7 @@ jobs:
   test-convert:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Export secrets to env variables (convert)
         uses: ./
         with:
@@ -87,7 +87,7 @@ jobs:
   test-convert-prefix:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Export secrets to env variables (starts with, include)
         uses: ./
         with:
@@ -106,7 +106,7 @@ jobs:
   test-remove-prefix:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Export secrets to env variables (remove prefix)
         uses: ./
         with:
@@ -124,7 +124,7 @@ jobs:
   test-remove-prefix-add-prefix:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Export secrets to env variables (remove prefix, add prefix)
         uses: ./
         with:
@@ -143,7 +143,7 @@ jobs:
   test-remove-prefix-convert:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Export secrets to env variables (remove prefix, convert)
         uses: ./
         with:
@@ -162,7 +162,7 @@ jobs:
   test-errors:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Bad secrets
         uses: ./
         with:
@@ -179,7 +179,7 @@ jobs:
   test-vars-only:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Export vars only (empty secrets)
         uses: ./
         with:
@@ -196,7 +196,7 @@ jobs:
   test-secrets-and-vars-no-collision:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Export both secrets and vars
         uses: ./
         with:
@@ -213,7 +213,7 @@ jobs:
   test-collision-prefer-secrets:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Export with collision (prefer-secrets)
         uses: ./
         with:
@@ -229,7 +229,7 @@ jobs:
   test-collision-prefer-vars:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Export with collision (prefer-vars)
         uses: ./
         with:
@@ -245,7 +245,7 @@ jobs:
   test-collision-error:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Export with collision (error mode)
         uses: ./
         with:
@@ -263,7 +263,7 @@ jobs:
   test-collision-warn:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Export with collision (warn mode)
         uses: ./
         with:
@@ -279,7 +279,7 @@ jobs:
   test-vars-with-filters:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Export vars with filters
         uses: ./
         with:
