@@ -1912,10 +1912,10 @@ eslint-plugin-import@^2.31.0:
     string.prototype.trimend "^1.0.9"
     tsconfig-paths "^3.15.0"
 
-eslint-plugin-jest@^29.11.1:
-  version "29.11.1"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-29.11.1.tgz#eac1f35f0d1bf1c56bbc09f3260732ad7871993b"
-  integrity sha512-EP2+xBHm7yMRSprEAui15zTnXAobGVc/Ub50OW0o1oQum2iyidfsCmpzaxEZg8f1XPMcIZEVvomla31VUG6YeQ==
+eslint-plugin-jest@^29.11.2:
+  version "29.11.2"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-29.11.2.tgz#ddbdbdcae9b54d0de741bd9494a3d20752755a7d"
+  integrity sha512-ISlgFckxC8Pon9/3gD2Cosbt9qA9VmrNobI6aGHfimklCOuPR5uftI413YBwa2rqLWy+VHDlx5je/6elPUMLlg==
   dependencies:
     "@typescript-eslint/utils" "^8.0.0"
 
