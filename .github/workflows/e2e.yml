@@ -11,6 +11,7 @@ on:
 
 jobs:
   test-exclude:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -30,6 +31,7 @@ jobs:
         shell: bash
 
   test-include-prefix:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -51,6 +53,7 @@ jobs:
         shell: bash
 
   test-override:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     env:
       SECRET_1: DONT_OVERRIDE
@@ -68,6 +71,7 @@ jobs:
         shell: bash
 
   test-convert:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -85,6 +89,7 @@ jobs:
         shell: bash
 
   test-convert-prefix:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -104,6 +109,7 @@ jobs:
         shell: bash
 
   test-remove-prefix:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -122,6 +128,7 @@ jobs:
         shell: bash
 
   test-remove-prefix-add-prefix:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -141,6 +148,7 @@ jobs:
         shell: bash
 
   test-remove-prefix-convert:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -160,6 +168,7 @@ jobs:
 
   # These jobs always fail, for now we just use it to check if the output is the expected
   test-errors:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -177,6 +186,7 @@ jobs:
 
   # Vars support tests
   test-vars-only:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -194,6 +204,7 @@ jobs:
         shell: bash
 
   test-secrets-and-vars-no-collision:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -211,6 +222,7 @@ jobs:
         shell: bash
 
   test-collision-prefer-secrets:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -227,6 +239,7 @@ jobs:
         shell: bash
 
   test-collision-prefer-vars:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -243,6 +256,7 @@ jobs:
         shell: bash
 
   test-collision-error:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -261,6 +275,7 @@ jobs:
         shell: bash
 
   test-collision-warn:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -277,6 +292,7 @@ jobs:
         shell: bash
 
   test-vars-with-filters:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
