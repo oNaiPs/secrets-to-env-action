@@ -33,7 +33,7 @@ inputs:
     required: false
     description: 'Either to override or not the variable if it already exists'
 runs:
-  using: 'node20'
+  using: 'node24'
   main: 'dist/index.js'
 branding:
   icon: book-open
